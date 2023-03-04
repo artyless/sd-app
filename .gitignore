@@ -1,0 +1,7 @@
+.DS_STORE
+build/
+node_modules
+client/node_modules
+.idea
+# Keep environment variables out of version control
+.env

@@ -1,0 +1,39 @@
+{
+  "name": "pinterest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.ts",
+  "type": "module",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node build/app.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q build/app.js\" \"npm run client\" "
+  },
+  "keywords": [
+    "react",
+    "node.js"
+  ],
+  "author": "Artyom Potykanenko <artyless@icloud.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/jsonwebtoken": "^9.0.1",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.15.0",
+    "jsonwebtoken": "^9.0.0"
+  },
+  "devDependencies": {
+    "@prisma/client": "^4.10.1",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.13.0",
+    "@types/pg-promise": "^5.4.3",
+    "concurrently": "^7.6.0",
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20",
+    "pg-promise": "^11.3.0",
+    "prisma": "^4.10.1",
+    "typescript": "^4.9.5"
+  }
+}
