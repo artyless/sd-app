@@ -13,7 +13,7 @@ function App() {
     const isAuthenticated: boolean = !!token
     const routes = useRoutes(isAuthenticated)
 
-    const {userId, userName, userEmail} = userData
+    const {id, userName, firstName, lastName, email, sex, dob} = userData
 
     if (!ready) {
         return <Loader />
@@ -22,7 +22,7 @@ function App() {
     // Почему мы храним данные в authHook, в authContext и в LocalStorage.........
     return (
         <AuthContext.Provider value={{
-            token, userId, userName, userEmail, login, logout, isAuthenticated
+            token, id, userName, firstName, lastName, email, sex, dob, login, logout, isAuthenticated
         }}>
             <Router>
                 <div>

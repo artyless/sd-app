@@ -26,9 +26,13 @@ model Profile {
 
 model User {
   id             Int      @id @default(autoincrement())
-  name           String?  @db.VarChar(255)
+  userName       String   @db.VarChar(32)
+  firstName      String  @db.VarChar(255)
+  lastName       String?  @db.VarChar(255)
   email          String   @unique @db.VarChar(255)
   hashedPassword String   @db.VarChar(255)
+  sex            String  @db.VarChar(16)
+  dob            DateTime @db.Timestamp(6)
   createdAt      DateTime @default(now()) @db.Timestamp(6)
   posts          Post[]
   profile        Profile?

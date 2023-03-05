@@ -2,17 +2,22 @@ import React, {useContext, useEffect, useState} from 'react'
 import {useHttp} from '../hooks/http.hook'
 import {useMessage} from '../hooks/message.hook'
 import {AuthContext} from '../context/AuthContext'
-import {IAuthData} from '../models'
+import {IUserRegistrationData} from '../models'
+import {Link} from 'react-router-dom'
 
 export const RegistrationPage = () => {
     const auth = useContext(AuthContext)
     const {request, loading, error, clearError} = useHttp()
     const message = useMessage()
-    const [form, setForm] = useState({
-        name: '',
+    const [form, setForm] = useState<IUserRegistrationData>({
+        userName: '',
+        firstName: '',
         email: '',
-        password: ''
+        password: '',
+        sex: '',
+        dob: ''
     })
+    // const [isRegistrationDataOkay, setIsRegistrationDataOkay] = useState<boolean>(true)
 
     useEffect(() => {
         message(error)
@@ -21,11 +26,19 @@ export const RegistrationPage = () => {
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setForm({...form, [event.target.id]: event.target.value})
+        // for (const key in form) {
+        //     if (form[key]) {
+        //         setIsRegistrationDataOkay(true)
+        //         return
+        //     }
+        // }
+        // setIsRegistrationDataOkay(false)
     }
 
     const registerHandler = async () => {
         try {
-            await request('/api/auth/register', 'POST', {...form})
+            console.log({...form})
+            const data = await request('/api/auth/register', 'POST', {...form})
         } catch (e) {
         }
     }
@@ -36,8 +49,14 @@ export const RegistrationPage = () => {
 
             <div>
                 <input
-                    placeholder="Name"
-                    id="name"
+                    placeholder="Username"
+                    id="userName"
+                    type="text"
+                    onChange={changeHandler}
+                />
+                <input
+                    placeholder="First name"
+                    id="firstName"
                     type="text"
                     onChange={changeHandler}
                 />
@@ -55,37 +74,35 @@ export const RegistrationPage = () => {
                 />
                 <input
                     placeholder="Repeat password"
-                    id="password"
+                    id="repeatPassword"
                     type="password"
                     onChange={changeHandler}
                 />
 
                 <div>
-                    Пол?
-                    <input type="checkbox"/>
-                    <input type="checkbox"/>
+                    Sex:
+                    <input id="sex" type="radio" name="sex" value="male" onChange={changeHandler}/>
+                    Male
+                    <input id="sex" type="radio" name="sex" value="female" onChange={changeHandler}/>
+                    Female
+                    <input id="sex" type="radio" name="sex" value="" onChange={changeHandler}/>
+                    Do not specify
                 </div>
-                
+
                 <div>
-                    date of birth
-                    <input type="date"/>
+                    Date of birth:
+                    <input id="dob" type="date" onChange={changeHandler}/>
                 </div>
             </div>
 
             <div>
-                {/*<button*/}
-                {/*    onClick={loginHandler}*/}
-                {/*    disabled={loading}*/}
-                {/*>*/}
-                {/*    Login*/}
-                {/*</button>*/}
                 <button
                     onClick={registerHandler}
                     disabled={loading}
                 >
                     Registration
                 </button>
-                <a href="/login">Return</a>
+                <Link to="/login">Return</Link>
             </div>
         </div>
     )

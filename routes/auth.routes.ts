@@ -17,8 +17,12 @@ const prisma = new PrismaClient()
 router.post(
     '/register',
     [
+        check('userName', 'Incorrect username').exists(),
+        check('firstName', 'Incorrect first name').exists(),
         check('email', 'Incorrect email').isEmail(),
-        check('password', 'Incorrect password').isLength({min: 6})
+        check('password', 'Incorrect password').isLength({min: 6}),
+        check('sex', 'Incorrect sex').exists(),
+        check('dob', 'Incorrect date of birth').exists()
     ],
     async (req: Request, res: Response) => {
         try {
@@ -31,7 +35,7 @@ router.post(
                 })
             }
 
-            const {name, email, password} = req.body
+            const {userName, firstName, email, password, sex, dob} = req.body
 
             const candidate = await prisma.user.findFirst({where: {email}})
 
@@ -44,9 +48,12 @@ router.post(
 
             await prisma.user.create({
                 data: {
-                    name,
+                    userName,
+                    firstName,
                     email,
-                    hashedPassword
+                    hashedPassword,
+                    sex,
+                    dob: new Date(dob)
                 }
             })
 
@@ -55,6 +62,7 @@ router.post(
             res.status(500).json({message: "Something went wrong, try again"})
         }
     })
+
 
 // /api/auth/login
 router.post(
@@ -94,7 +102,7 @@ router.post(
 
             // Зачем в payload userId и прочее?
             const token = jwt.sign(
-                {userId: user.id},
+                {id: user.id},
                 JWT_SECRET,
                 {expiresIn: '1h'}
             )
@@ -102,10 +110,14 @@ router.post(
             // А если зашифровать в токене?
             res.json({
                 token,
-                userId: user.id,
-                userName: user.name,
-                userEmail: user.email,
-                userCreatedAt: user.createdAt
+                id: user.id,
+                userName: user.userName,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                sex: user.sex,
+                dob: user.dob,
+                createdAt: user.createdAt
             })
         } catch (e) {
             res.status(500).json({message: "Something went wrong, try again"})

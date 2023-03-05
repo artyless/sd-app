@@ -1,28 +1,51 @@
 export interface IUser {
-    name: string
+    firstName: string
     email: string
 }
 
 export interface IUserData {
-    userId: number | null
-    userName: string | null
-    userEmail: string | null
+    id: number | null
+    userName: string
+    firstName: string
+    lastName: string
+    email: string
+    sex: "male" | "female" | ""
+    dob: string
+}
+
+// RegistrationPage
+export interface IUserRegistrationData {
+    userName: string
+    firstName: string
+    email: string
+    password: string
+    sex: 'male' | 'female' | ''
+    dob: string
 }
 
 export interface IAuthData {
     token: string
-    userCreatedAt: string
-    userId: number
+    id: number | null
     userName: string
-    userEmail: string
+    firstName: string
+    lastName: string
+    email: string
+    sex: 'male' | 'female' | ''
+    dob: string
+    createdAt: string
 }
 
+// Context
 export interface IContext {
-    token: string | null
-    userId: number | null
-    userName: string | null
-    userEmail: string | null
-    login: (jwtToken: string, userId: number, userName: string, userEmail: string) => void
+    token: string
+    id: number | null
+    userName: string
+    firstName: string
+    lastName: string
+    email: string
+    sex: 'male' | 'female' | ''
+    dob: string
+    login: (jwtToken: string, id: number, userName: string, firstName: string, lastName: string, email: string, sex: 'male' | 'female' | '', dob: string) => void
     logout: () => void
     isAuthenticated: boolean
 }

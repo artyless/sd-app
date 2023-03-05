@@ -6,38 +6,67 @@ const STORAGE_NAME = 'userData'
 
 // Так нормально??
 export const useAuth = (): {
-    token: string | null,
+    token: string,
     userData: IUserData,
-    login: (jwtToken: string, userId: number, userName: string, userEmail: string) => void,
+    login: (jwtToken: string, id: number, userName: string, firstName: string, lastName: string, email: string, sex: 'male' | 'female' | '', dob: string) => void,
     logout: () => void,
     ready: boolean
 } => {
     const [userData, setUserData] = useState<IUserData>({
-        userId: null,
-        userName: null,
-        userEmail: null
+        id: null,
+        userName: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        sex: '',
+        dob: ''
     })
-    const [token, setToken] = useState<string | null>(null)
+    const [token, setToken] = useState<string>('')
     const [ready, setReady] = useState<boolean>(false)
 
-    const login = useCallback((jwtToken: string, userId: number, userName: string, userEmail: string): void => {
+    const login = useCallback((
+        jwtToken: string,
+        id: number,
+        userName: string,
+        firstName: string,
+        lastName: string,
+        email: string,
+        sex: 'male' | 'female' | '',
+        dob: string
+    ): void => {
         setUserData({
-            userId: userId,
+            id: id,
             userName: userName,
-            userEmail: userEmail
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            sex: sex,
+            dob: dob
         })
         setToken(jwtToken)
 
         localStorage.setItem(STORAGE_NAME, JSON.stringify({
-            token: jwtToken, userId: userId, userName: userName, userEmail: userEmail, isAuthenticated: true
+            token: jwtToken,
+            id: id,
+            userName: userName,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            sex: sex,
+            dob: dob,
+            isAuthenticated: true
         }))
     }, [])
 
     const logout = useCallback((): void => {
         setUserData({
-            userId: null,
-            userName: null,
-            userEmail: null
+            id: null,
+            userName: '',
+            firstName: '',
+            lastName: '',
+            email: '',
+            sex: '',
+            dob: ''
         })
 
         localStorage.removeItem(STORAGE_NAME)
@@ -54,7 +83,7 @@ export const useAuth = (): {
         const data = JSON.parse(localData)
 
         if (data && data.token) {
-            login(data.token, data.userId, data.userName, data.userEmail)
+            login(data.token, data.id, data.userName, data.firstName, data.lastName, data.email, data.sex, data.dob)
         }
 
         setReady(true)

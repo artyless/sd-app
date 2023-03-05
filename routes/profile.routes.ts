@@ -8,14 +8,29 @@ const prisma = new PrismaClient()
 // /api/profile/
 router.post('/', auth, async (req: Request, res: Response) => {
     try {
-        const {userId, name, email} = req.body
+        const {id, userName, firstName, lastName, email, sex, dob} = req.body
 
         const user = await prisma.user.update({
-            where: {id: userId},
-            data: { name: name, email: email}
+            where: {id: id},
+            data: {
+                userName,
+                firstName,
+                lastName,
+                email,
+                sex,
+                dob: new Date(dob)
+            }
         })
 
-        res.status(201).json({message: 'Profile data changed', userName: user.name, userEmail: user.email})
+        res.status(201).json({
+            message: 'Profile data changed',
+            userName: user.userName,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            sex: user.sex,
+            dob: user.dob
+        })
     } catch (e) {
         res.status(500).json({message: "Something went wrong, try again"})
     }

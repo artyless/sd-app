@@ -18,8 +18,13 @@ export const ProfilePage = () => {
 
     // ИЛИ ИСПОЛЬЗОВАТЬ IUserData
     const [form, setForm] = useState({
-        name: `${auth.userName}`,
-        email: `${auth.userEmail}`
+        userName: `${auth.userName}`,
+        firstName: `${auth.firstName}`,
+        lastName: `${auth.lastName}`,
+        email: `${auth.email}`,
+        sex: `${auth.sex}`,
+        dob: `${auth.dob}`
+        // createdAt: `${auth.createdAt}`
     })
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -28,16 +33,24 @@ export const ProfilePage = () => {
 
     const editUserProfile = async () => {
         try {
-            const data:any = await request('/api/profile/', 'POST', {userId: auth.userId, ...form}, {Authorization: `Bearer ${auth.token}`})
+            const data: any = await request('/api/profile/', 'POST', {id: auth.id, ...form}, {Authorization: `Bearer ${auth.token}`})
             if (data) {
                 auth.userName = data.userName
-                auth.userEmail = data.userEmail
+                auth.firstName = data.firstName
+                auth.lastName = data.lastName
+                auth.email = data.email
+                auth.sex = data.sex
+                auth.dob = data.dob
 
                 localStorage.setItem(STORAGE_NAME, JSON.stringify({
                     token: auth.token,
-                    userId: auth.userId,
+                    id: auth.id,
                     userName: data.userName,
-                    userEmail: data.userEmail,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    email: data.email,
+                    sex: data.sex,
+                    dob: data.dob,
                     isAuthenticated: true
                 }))
                 setIsEdit(false)
@@ -51,18 +64,50 @@ export const ProfilePage = () => {
             <h1>Profile</h1>
             <div>
                 <div>
-                    <p><b>Name:</b></p>
+                    <p><b>Username:</b></p>
                     {
                         isEdit ?
                             <input
                                 type="text"
-                                id="name"
-                                value={form.name}
+                                id="userName"
+                                value={form.userName}
                                 disabled={loading}
                                 onChange={changeHandler}
                             />
                             :
                             <div>{auth.userName}</div>
+                    }
+                </div>
+
+                <div>
+                    <p><b>First name:</b></p>
+                    {
+                        isEdit ?
+                            <input
+                                type="text"
+                                id="firstName"
+                                value={form.firstName}
+                                disabled={loading}
+                                onChange={changeHandler}
+                            />
+                            :
+                            <div>{auth.firstName}</div>
+                    }
+                </div>
+
+                <div>
+                    <p><b>Last name:</b></p>
+                    {
+                        isEdit ?
+                            <input
+                                type="text"
+                                id="lastName"
+                                value={form.lastName}
+                                disabled={loading}
+                                onChange={changeHandler}
+                            />
+                            :
+                            <div>{auth.lastName}</div>
                     }
                 </div>
 
@@ -78,8 +123,64 @@ export const ProfilePage = () => {
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{auth.userEmail}</div>
+                            <div>{auth.email}</div>
                     }
+                </div>
+
+                <div>
+                    <p><b>Sex:</b></p>
+                    {
+                        isEdit ?
+                            <>
+                                <input
+                                    type="radio"
+                                    id="sex"
+                                    name="sex"
+                                    value="male"
+                                    disabled={loading}
+                                    onChange={changeHandler}
+                                />
+                                <input
+                                    type="radio"
+                                    id="sex"
+                                    name="sex"
+                                    value="female"
+                                    disabled={loading}
+                                    onChange={changeHandler}
+                                />
+                                <input
+                                    type="radio"
+                                    id="sex"
+                                    name="sex"
+                                    value=""
+                                    disabled={loading}
+                                    onChange={changeHandler}
+                                />
+                            </>
+                            :
+                            <div>{auth.sex}</div>
+                    }
+                </div>
+
+                <div>
+                    <p><b>Date of birth:</b></p>
+                    {
+                        isEdit ?
+                            <input
+                                type="date"
+                                id="dob"
+                                value={form.dob}
+                                disabled={loading}
+                                onChange={changeHandler}
+                            />
+                            :
+                            <div>{auth.dob}</div>
+                    }
+                </div>
+
+                <div>
+                    <p><b>Created at:</b></p>
+                    {/*<div>{auth.createdAt}</div>*/}
                 </div>
             </div>
 
