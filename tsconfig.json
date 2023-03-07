@@ -117,15 +117,13 @@
     "skipLibCheck": true
     /* Skip type checking all .d.ts files. */
   },
-  "include": [
-        "./**/*"
-      ],
   "exclude": [
     "node_modules",
     "client",
     "pg-promise",
     "prisma",
-    "build"
+    "build",
+    "processing-server"
   ],
   "lib": [
     "esnext"
