@@ -12,7 +12,6 @@ const JWT_SECRET: string | undefined = process.env.JWT_SECRET
 const router: Router = Router()
 const prisma = new PrismaClient()
 
-
 // /api/auth/register
 router.post(
     '/register',
@@ -100,14 +99,12 @@ router.post(
                 return res.status(500).json({message: 'Problems with server'})
             }
 
-            // Зачем в payload userId и прочее?
             const token = jwt.sign(
                 {id: user.id},
                 JWT_SECRET,
                 {expiresIn: '1h'}
             )
 
-            // А если зашифровать в токене?
             res.json({
                 token,
                 id: user.id,

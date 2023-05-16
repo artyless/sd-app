@@ -1,0 +1,68 @@
+/*TODO выше?*/
+.container {
+  margin: 5%;
+}
+
+.image-grid {
+  display: grid;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.image-grid.grid3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.image-grid.grid4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.image-grid-item {
+  position: relative;
+}
+
+.image-grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.3s ease;
+}
+
+.image-grid-item:hover img {
+  filter: brightness(70%);
+}
+
+.image-grid-item .image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-grid-item:hover .image-overlay {
+  opacity: 1;
+}
+
+.image-grid-item .like-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-grid-item:hover .like-button {
+  opacity: 1;
+}

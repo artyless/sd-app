@@ -1,0 +1,46 @@
+.grid-type-selector {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.grid-type-selector label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.grid-type-selector input[type="radio"] {
+  margin-right: 5px;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.grid-type-selector input[type="radio"]:checked {
+  border-color: #555;
+}
+
+.grid-type-selector input[type="radio"]:focus {
+  outline: none;
+}
+
+.grid-type-selector input[type="radio"]::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #555;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.3s ease;
+}
+
+.grid-type-selector input[type="radio"]:checked::before {
+  transform: scale(0.6);
+}
