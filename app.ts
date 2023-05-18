@@ -1,7 +1,6 @@
 import express, {Express} from 'express'
 import authRoutes from './routes/auth.routes.js'
 import profileRoutes from './routes/profile.routes.js'
-import imageRoutes from './routes/image.routes.js'
 import stableDiffusionRoutes from './routes/sd.routes.js'
 
 import dotenv from 'dotenv'
@@ -16,7 +15,6 @@ app.use(express.json({limit: '15mb'}))
 
 app.use('/api/auth', authRoutes)
 app.use('/api/profile', profileRoutes)
-app.use('/api/image', imageRoutes)
 app.use('/api/sd', stableDiffusionRoutes)
 
 const start = async () => {

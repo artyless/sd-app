@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 // /api/profile/
 router.post('/', auth, async (req: Request, res: Response) => {
     try {
-        const {id, userName, firstName, lastName, email, sex, dob} = req.body
+        const {id, userName, firstName, lastName, email} = req.body
 
         const user = await prisma.user.update({
             where: {id: id},
@@ -16,9 +16,7 @@ router.post('/', auth, async (req: Request, res: Response) => {
                 userName,
                 firstName,
                 lastName,
-                email,
-                sex,
-                dob: new Date(dob)
+                email
             }
         })
 
@@ -27,9 +25,7 @@ router.post('/', auth, async (req: Request, res: Response) => {
             userName: user.userName,
             firstName: user.firstName,
             lastName: user.lastName,
-            email: user.email,
-            sex: user.sex,
-            dob: user.dob
+            email: user.email
         })
     } catch (e) {
         res.status(500).json({message: "Something went wrong, try again"})

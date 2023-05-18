@@ -13,9 +13,7 @@ export const RegistrationPage = () => {
         userName: '',
         firstName: '',
         email: '',
-        password: '',
-        sex: '',
-        dob: ''
+        password: ''
     })
     // const [isRegistrationDataOkay, setIsRegistrationDataOkay] = useState<boolean>(true)
 
@@ -78,21 +76,6 @@ export const RegistrationPage = () => {
                     type="password"
                     onChange={changeHandler}
                 />
-
-                <div>
-                    Sex:
-                    <input id="sex" type="radio" name="sex" value="male" onChange={changeHandler}/>
-                    Male
-                    <input id="sex" type="radio" name="sex" value="female" onChange={changeHandler}/>
-                    Female
-                    <input id="sex" type="radio" name="sex" value="" onChange={changeHandler}/>
-                    Do not specify
-                </div>
-
-                <div>
-                    Date of birth:
-                    <input id="dob" type="date" onChange={changeHandler}/>
-                </div>
             </div>
 
             <div>

@@ -8,8 +8,7 @@ export const AuthContext = createContext<IContext>({
     firstName: '',
     lastName: '',
     email: '',
-    sex: 'male' || 'female' || '',
-    dob: '',
+    createdAt: '',
     login: () => {
     },
     logout: () => {

@@ -19,9 +19,7 @@ router.post(
         check('userName', 'Incorrect username').exists(),
         check('firstName', 'Incorrect first name').exists(),
         check('email', 'Incorrect email').isEmail(),
-        check('password', 'Incorrect password').isLength({min: 6}),
-        check('sex', 'Incorrect sex').exists(),
-        check('dob', 'Incorrect date of birth').exists()
+        check('password', 'Incorrect password').isLength({min: 6})
     ],
     async (req: Request, res: Response) => {
         try {
@@ -34,7 +32,7 @@ router.post(
                 })
             }
 
-            const {userName, firstName, email, password, sex, dob} = req.body
+            const {userName, firstName, email, password} = req.body
 
             const candidate = await prisma.user.findFirst({where: {email}})
 
@@ -50,9 +48,7 @@ router.post(
                     userName,
                     firstName,
                     email,
-                    hashedPassword,
-                    sex,
-                    dob: new Date(dob)
+                    hashedPassword
                 }
             })
 
@@ -112,8 +108,6 @@ router.post(
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
-                sex: user.sex,
-                dob: user.dob,
                 createdAt: user.createdAt
             })
         } catch (e) {

@@ -7,11 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
+model Image {
   id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(255)
+  prompt    String   @db.VarChar(255)
   createdAt DateTime @default(now()) @db.Timestamp(6)
-  content   String?
   published Boolean  @default(false)
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -26,14 +25,12 @@ model Profile {
 
 model User {
   id             Int      @id @default(autoincrement())
-  userName       String   @db.VarChar(32)
-  firstName      String  @db.VarChar(255)
+  userName       String   @unique @db.VarChar(32)
+  firstName      String   @db.VarChar(255)
   lastName       String?  @db.VarChar(255)
   email          String   @unique @db.VarChar(255)
   hashedPassword String   @db.VarChar(255)
-  sex            String  @db.VarChar(16)
-  dob            DateTime @db.Timestamp(6)
   createdAt      DateTime @default(now()) @db.Timestamp(6)
-  posts          Post[]
+  images         Image[]
   profile        Profile?
 }

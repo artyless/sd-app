@@ -3,12 +3,10 @@ import {IUserData} from '../models'
 
 const STORAGE_NAME = 'userData'
 
-
-// Так нормально??
 export const useAuth = (): {
     token: string,
     userData: IUserData,
-    login: (jwtToken: string, id: number, userName: string, firstName: string, lastName: string, email: string, sex: 'male' | 'female' | '', dob: string) => void,
+    login: (jwtToken: string, id: number, userName: string, firstName: string, lastName: string, email: string, createdAt: string) => void,
     logout: () => void,
     ready: boolean
 } => {
@@ -18,8 +16,7 @@ export const useAuth = (): {
         firstName: '',
         lastName: '',
         email: '',
-        sex: '',
-        dob: ''
+        createdAt: ''
     })
     const [token, setToken] = useState<string>('')
     const [ready, setReady] = useState<boolean>(false)
@@ -31,8 +28,7 @@ export const useAuth = (): {
         firstName: string,
         lastName: string,
         email: string,
-        sex: 'male' | 'female' | '',
-        dob: string
+        createdAt: string
     ): void => {
         setUserData({
             id: id,
@@ -40,8 +36,7 @@ export const useAuth = (): {
             firstName: firstName,
             lastName: lastName,
             email: email,
-            sex: sex,
-            dob: dob
+            createdAt: createdAt
         })
         setToken(jwtToken)
 
@@ -52,8 +47,7 @@ export const useAuth = (): {
             firstName: firstName,
             lastName: lastName,
             email: email,
-            sex: sex,
-            dob: dob,
+            createdAt: createdAt,
             isAuthenticated: true
         }))
     }, [])
@@ -65,8 +59,7 @@ export const useAuth = (): {
             firstName: '',
             lastName: '',
             email: '',
-            sex: '',
-            dob: ''
+            createdAt: ''
         })
 
         localStorage.removeItem(STORAGE_NAME)
@@ -83,7 +76,7 @@ export const useAuth = (): {
         const data = JSON.parse(localData)
 
         if (data && data.token) {
-            login(data.token, data.id, data.userName, data.firstName, data.lastName, data.email, data.sex, data.dob)
+            login(data.token, data.id, data.userName, data.firstName, data.lastName, data.email, data.createdAt)
         }
 
         setReady(true)

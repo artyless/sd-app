@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {AuthContext} from '../context/AuthContext'
 import {useHttp} from '../hooks/http.hook'
 import {useMessage} from '../hooks/message.hook'
+import {IUserData} from "../models"
 
 const STORAGE_NAME = 'userData'
 
@@ -16,31 +17,27 @@ export const ProfilePage = () => {
         clearError()
     }, [error, message, clearError])
 
-    // ИЛИ ИСПОЛЬЗОВАТЬ IUserData
-    const [form, setForm] = useState({
+    const [userData, setUserData] = useState<IUserData>({
+        id: auth.id,
         userName: `${auth.userName}`,
         firstName: `${auth.firstName}`,
         lastName: `${auth.lastName}`,
         email: `${auth.email}`,
-        sex: `${auth.sex}`,
-        dob: `${auth.dob}`
-        // createdAt: `${auth.createdAt}`
+        createdAt: `${auth.createdAt}`
     })
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        setForm({...form, [event.target.id]: event.target.value})
+        setUserData({...userData, [event.target.id]: event.target.value})
     }
 
     const editUserProfile = async () => {
         try {
-            const data: any = await request('/api/profile/', 'POST', {id: auth.id, ...form}, {Authorization: `Bearer ${auth.token}`})
+            const data: any = await request('/api/profile/', 'POST', {...userData}, {Authorization: `Bearer ${auth.token}`})
             if (data) {
                 auth.userName = data.userName
                 auth.firstName = data.firstName
                 auth.lastName = data.lastName
                 auth.email = data.email
-                auth.sex = data.sex
-                auth.dob = data.dob
 
                 localStorage.setItem(STORAGE_NAME, JSON.stringify({
                     token: auth.token,
@@ -49,8 +46,7 @@ export const ProfilePage = () => {
                     firstName: data.firstName,
                     lastName: data.lastName,
                     email: data.email,
-                    sex: data.sex,
-                    dob: data.dob,
+                    createdAt: data.createdAt,
                     isAuthenticated: true
                 }))
                 setIsEdit(false)
@@ -61,7 +57,7 @@ export const ProfilePage = () => {
 
     return (
         <div>
-            <h1>Profile</h1>
+
             <div>
                 <div>
                     <p><b>Username:</b></p>
@@ -70,7 +66,7 @@ export const ProfilePage = () => {
                             <input
                                 type="text"
                                 id="userName"
-                                value={form.userName}
+                                value={auth.userName}
                                 disabled={loading}
                                 onChange={changeHandler}
                             />
@@ -86,7 +82,7 @@ export const ProfilePage = () => {
                             <input
                                 type="text"
                                 id="firstName"
-                                value={form.firstName}
+                                value={auth.firstName}
                                 disabled={loading}
                                 onChange={changeHandler}
                             />
@@ -102,7 +98,7 @@ export const ProfilePage = () => {
                             <input
                                 type="text"
                                 id="lastName"
-                                value={form.lastName}
+                                value={auth.lastName}
                                 disabled={loading}
                                 onChange={changeHandler}
                             />
@@ -118,7 +114,7 @@ export const ProfilePage = () => {
                             <input
                                 type="email"
                                 id="email"
-                                value={form.email}
+                                value={auth.email}
                                 disabled={loading}
                                 onChange={changeHandler}
                             />
@@ -128,62 +124,10 @@ export const ProfilePage = () => {
                 </div>
 
                 <div>
-                    <p><b>Sex:</b></p>
-                    {
-                        isEdit ?
-                            <>
-                                <input
-                                    type="radio"
-                                    id="sex"
-                                    name="sex"
-                                    value="male"
-                                    disabled={loading}
-                                    onChange={changeHandler}
-                                />
-                                <input
-                                    type="radio"
-                                    id="sex"
-                                    name="sex"
-                                    value="female"
-                                    disabled={loading}
-                                    onChange={changeHandler}
-                                />
-                                <input
-                                    type="radio"
-                                    id="sex"
-                                    name="sex"
-                                    value=""
-                                    disabled={loading}
-                                    onChange={changeHandler}
-                                />
-                            </>
-                            :
-                            <div>{auth.sex}</div>
-                    }
-                </div>
-
-                <div>
-                    <p><b>Date of birth:</b></p>
-                    {
-                        isEdit ?
-                            <input
-                                type="date"
-                                id="dob"
-                                value={form.dob}
-                                disabled={loading}
-                                onChange={changeHandler}
-                            />
-                            :
-                            <div>{auth.dob}</div>
-                    }
-                </div>
-
-                <div>
                     <p><b>Created at:</b></p>
-                    {/*<div>{auth.createdAt}</div>*/}
+                    <div>{auth.createdAt}</div>
                 </div>
             </div>
-
 
             <div>
                 <button onClick={() => setIsEdit(prev => !prev)}>
