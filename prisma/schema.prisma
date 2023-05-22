@@ -8,29 +8,38 @@ datasource db {
 }
 
 model Image {
-  id        Int      @id @default(autoincrement())
-  prompt    String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  published Boolean  @default(false)
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id           Int        @id @default(autoincrement())
+  prompt       String     @db.VarChar(255)
+  address      String     @unique @db.VarChar(255)
+  published    Boolean    @default(false)
+  likeCount    Int        @default(0)
+  createdAt    DateTime   @default(now()) @db.Timestamp(6)
+  userId       Int
+  collectionId Int
+  Collection   Collection @relation(fields: [collectionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User         User       @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  userId Int     @unique
-  user   User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Collection {
+  id           Int     @id @default(autoincrement())
+  title        String  @db.VarChar(32)
+  amountImages Int?
+  bucket       String  @unique @db.VarChar(255)
+  userId       Int
+  user         User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Image        Image[]
+
+  @@unique([userId, title], map: "unique_user_collection")
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  userName       String   @unique @db.VarChar(32)
-  firstName      String   @db.VarChar(255)
-  lastName       String?  @db.VarChar(255)
-  email          String   @unique @db.VarChar(255)
-  hashedPassword String   @db.VarChar(255)
-  createdAt      DateTime @default(now()) @db.Timestamp(6)
-  images         Image[]
-  profile        Profile?
+  id             Int          @id @default(autoincrement())
+  userName       String       @unique @db.VarChar(32)
+  firstName      String       @db.VarChar(32)
+  lastName       String?      @db.VarChar(32)
+  email          String       @unique @db.VarChar(64)
+  hashedPassword String       @db.VarChar(255)
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  collections    Collection[]
+  Image          Image[]
 }

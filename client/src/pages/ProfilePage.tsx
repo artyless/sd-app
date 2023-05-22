@@ -1,8 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {AuthContext} from '../context/AuthContext'
 import {useHttp} from '../hooks/http.hook'
 import {useMessage} from '../hooks/message.hook'
-import {IUserData} from "../models"
+import {IUserData} from '../models'
+import '../styles/css/pop-up.css'
+import '../styles/css/collection.css'
 
 const STORAGE_NAME = 'userData'
 
@@ -11,11 +13,31 @@ export const ProfilePage = () => {
     const {request, loading, error, clearError} = useHttp()
     const message = useMessage()
     const [isEdit, setIsEdit] = useState<boolean>(false)
+    const [collections, setCollections] = useState<any>('')
+    const [collectionName, setCollectionName] = useState<string>('')
+    const [images, setImages] = useState<any>('')
+    const [isPopUpOpen, setIsPopUpOpen] = useState<boolean>(false)
+    const popupRef = useRef(null)
 
     useEffect(() => {
         message(error)
         clearError()
     }, [error, message, clearError])
+
+    useEffect(() => {
+        const handleGetCollections = async () => {
+            try {
+                const response: any = await request('/api/collection/', 'GET', null, {Authorization: `Bearer ${auth.token}`})
+
+                if (response) {
+                    setCollections(response.data)
+                }
+            } catch (e) {
+            }
+        }
+
+        handleGetCollections().then()
+    }, [])
 
     const [userData, setUserData] = useState<IUserData>({
         id: auth.id,
@@ -28,6 +50,17 @@ export const ProfilePage = () => {
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setUserData({...userData, [event.target.id]: event.target.value})
+    }
+
+    const createCollection = async () => {
+        try {
+            const data = await request('/api/collection/create', 'POST', {
+                id: auth.id,
+                collectionName: collectionName
+            }, {Authorization: `Bearer ${auth.token}`})
+            console.log(data)
+        } catch (e) {
+        }
     }
 
     const editUserProfile = async () => {
@@ -51,6 +84,45 @@ export const ProfilePage = () => {
                 }))
                 setIsEdit(false)
             }
+        } catch (e) {
+        }
+    }
+
+    const handleGetImages = async (collection: string) => {
+        try {
+            const response: any = await request('/api/minio/images-get', 'POST', {
+                id: auth.id,
+                collection
+            }, {Authorization: `Bearer ${auth.token}`})
+
+            console.log(images)
+
+            // if (response) {
+            //     setImages(response.data)
+            // }
+        } catch (e) {
+        }
+    }
+
+    const openPopup = () => {
+        setIsPopUpOpen(true)
+    }
+
+    const closePopup = () => {
+        setIsPopUpOpen(false)
+    }
+
+    const changeCollectionHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        setCollectionName(event.target.value)
+    }
+
+    const deleteCollection = async (collection: string) => {
+        try {
+            const response = await request('/api/collection/delete', 'POST', {
+                    id: auth.id,
+                    collectionName: collection
+                },
+                {Authorization: `Bearer ${auth.token}`})
         } catch (e) {
         }
     }
@@ -142,7 +214,35 @@ export const ProfilePage = () => {
                     isEdit &&
                   <button onClick={editUserProfile}>Change data</button>
                 }
-                {/*{isEdit && <button onClick={changePasswordHandler}>Change password</button>}*/}
+            </div>
+
+            <div>
+                <button onClick={openPopup}>OPEN POP UP</button>
+                {
+                    isPopUpOpen &&
+                  <div className={`popup ${isPopUpOpen ? 'open' : ''}`} ref={popupRef}>
+                    <div>
+                      <span>TITLE</span>
+                      <input
+                        type="text"
+                        id="collection"
+                        disabled={loading}
+                        onChange={changeCollectionHandler}
+                      />
+                    </div>
+                    <button onClick={createCollection}>CREATE COLLECTION</button>
+                    <button onClick={closePopup}>CLOSE POP UP</button>
+                  </div>
+                }
+            </div>
+
+            <div>
+                {collections && collections.map((collection: any, index: number) => (
+                    <div key={index} className="collection">
+                        <div onClick={() => handleGetImages(collection.title)}>{collection.title}</div>
+                        <button onClick={() => deleteCollection(collection.title)}>Delete</button>
+                    </div>
+                ))}
             </div>
         </div>
     )

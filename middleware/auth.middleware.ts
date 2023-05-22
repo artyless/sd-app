@@ -8,11 +8,7 @@ const JWT_SECRET: string | undefined = process.env.JWT_SECRET
 
 export function auth(req: Request, res: Response, next: NextFunction): Response | void {
     if (req.method === 'OPTION') {
-        // Правильно?
-        // return next()
-        // Или так
         return next()
-        // next()
     }
 
     try {
@@ -30,11 +26,11 @@ export function auth(req: Request, res: Response, next: NextFunction): Response 
             return res.status(500).json({message: 'Problems with server'})
         }
 
-        // И что???
-        // const decoded:any = jwt.verify(token, JWT_SECRET)
-        // А это зачем???
-        // req.user = decoded
-        // next()
+        const decoded: any = jwt.verify(token, JWT_SECRET)
+
+        // TODO
+        // @ts-ignore
+        req.user = decoded
         next()
     } catch (e: any) {
         console.error(e.message)
