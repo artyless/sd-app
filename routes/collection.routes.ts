@@ -2,7 +2,7 @@ import {Router, Request, Response} from 'express'
 import {auth} from '../middleware/auth.middleware.js'
 import {PrismaClient} from '@prisma/client'
 import minio from 'minio'
-import {v4 as uuidv4} from 'uuid'
+import {generateUniqueFileName} from '../utils/generateUniqueFileName.js'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -24,12 +24,6 @@ const minioClient = new minio.Client({
     accessKey: MINIO_ACCESS,
     secretKey: MINIO_SECRET
 })
-
-function generateUniqueFileName(fileName: string): string {
-    const preparedStr = fileName.replace(' ', '').toLowerCase()
-    const uniqueStr = uuidv4()
-    return `${preparedStr}-${uniqueStr}`
-}
 
 // /api/collection/create
 router.post('/create', auth, async (req: Request, res: Response) => {
