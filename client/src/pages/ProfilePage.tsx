@@ -240,6 +240,7 @@ export const ProfilePage = () => {
                 {collections && collections.map((collection: any, index: number) => (
                     <div key={index} className="collection">
                         <div onClick={() => handleGetImages(collection.title)}>{collection.title}</div>
+                        <div>{collection.amountImages > 0 ? collection.amountImages : 0}</div>
                         <button onClick={() => deleteCollection(collection.title)}>Delete</button>
                     </div>
                 ))}
