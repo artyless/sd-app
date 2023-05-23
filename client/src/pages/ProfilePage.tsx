@@ -90,16 +90,14 @@ export const ProfilePage = () => {
 
     const handleGetImages = async (collection: string) => {
         try {
-            const response: any = await request('/api/minio/images-get', 'POST', {
+            const response: any = await request('/api/image/', 'POST', {
                 id: auth.id,
-                collection
+                collectionName: collection
             }, {Authorization: `Bearer ${auth.token}`})
 
-            console.log(images)
-
-            // if (response) {
-            //     setImages(response.data)
-            // }
+            if (response) {
+                setImages(response.images)
+            }
         } catch (e) {
         }
     }
@@ -244,6 +242,13 @@ export const ProfilePage = () => {
                         <button onClick={() => deleteCollection(collection.title)}>Delete</button>
                     </div>
                 ))}
+            </div>
+
+            <div>
+                {images && images.map((img:any) => (
+                        <img key={img.data.id} src={`data:image/png;base64,${img.imageStr}`} alt="Generated image"/>
+                    )
+                )}
             </div>
         </div>
     )

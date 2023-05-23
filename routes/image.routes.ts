@@ -1,7 +1,7 @@
 import {Router, Request, Response} from 'express'
 import {auth} from '../middleware/auth.middleware.js'
 import minio from 'minio'
-import {PrismaClient} from '@prisma/client'
+import {Image, PrismaClient} from '@prisma/client'
 import {generateUniqueFileName} from '../utils/generateUniqueFileName.js'
 import dotenv from 'dotenv'
 
@@ -25,8 +25,8 @@ const minioClient = new minio.Client({
     secretKey: MINIO_SECRET
 })
 
-// /api/image/
-router.post('/', auth, async (req: Request, res: Response) => {
+// /api/image/save
+router.post('/save', auth, async (req: Request, res: Response) => {
     try {
         const {id, imageStr, prompt, collectionName} = req.body
 
@@ -72,18 +72,75 @@ router.post('/', auth, async (req: Request, res: Response) => {
 })
 
 // /api/image/
-router.get('/', auth, async (req: Request, res: Response) => {
+router.post('/', auth, async (req: Request, res: Response) => {
     try {
-        const {id, collection} = req.body
+        const {id, collectionName} = req.body
 
-        // TODO
-        // @ts-ignore
+        const collection = await prisma.collection.findFirst({
+            where: {
+                userId: id,
+                title: collectionName
+            }
+        })
 
-        const img = await minioClient.getObject(collection, 'image1.png')
+        if (!collection) {
+            return res.status(500).json({message: "Collection not found"})
+        }
 
-        const base64Image = img.toString()
-        res.status(200).json({image: base64Image})
+        // index !!!!
 
+        const images: Image[] = await prisma.image.findMany({
+            where: {
+                userId: id,
+                collectionId: collection.id
+            }
+        })
+
+        if (!images) {
+            return res.status(500).json({message: "Images not found"})
+        }
+
+        const getObjectsByName = (bucketName: string, objectNames: Image[]) => {
+            return new Promise((resolve, reject) => {
+                const objects: any = []
+
+                let count = 0
+
+                objectNames.forEach(objectName => {
+                    minioClient.getObject(bucketName, objectName.address, (err, stream) => {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            const chunks: any = []
+                            stream.on('data', chunk => {
+                                chunks.push(chunk)
+                            })
+                            stream.on('end', () => {
+                                const objectData = Buffer.concat(chunks)
+                                objects.push({data: objectName, imageStr: objectData.toString('base64')})
+                                count++
+
+                                if (count === objectNames.length) {
+                                    resolve(objects)
+                                }
+                            })
+                            stream.on('error', err => {
+                                reject(err)
+                            })
+                        }
+                    })
+                })
+            })
+        }
+
+        getObjectsByName(collection.bucket, images)
+            .then(objects => {
+                res.status(200).json({images: objects})
+            })
+            .catch(err => {
+                console.error('Ошибка при получении элементов из бакета:', err)
+                return res.status(500).json({message: "Error while getting images from collection"})
+            })
     } catch (e) {
         res.status(500).json({message: "Something went wrong, try again"})
     }
