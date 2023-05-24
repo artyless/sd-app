@@ -3,8 +3,7 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 
 dotenv.config()
-
-const JWT_SECRET: string | undefined = process.env.JWT_SECRET
+const JWT_SECRET: string = process.env.JWT_SECRET!
 
 export function auth(req: Request, res: Response, next: NextFunction): Response | void {
     if (req.method === 'OPTION') {
@@ -26,14 +25,10 @@ export function auth(req: Request, res: Response, next: NextFunction): Response 
             return res.status(500).json({message: 'Problems with server'})
         }
 
-        const decoded: any = jwt.verify(token, JWT_SECRET)
-
-        // TODO
-        // @ts-ignore
-        req.user = decoded
+        req.user = jwt.verify(token, JWT_SECRET) as {id: number}
         next()
-    } catch (e: any) {
-        console.error(e.message)
+    } catch (err: any) {
+        console.error(err.message)
         return res.status(401).json({message: 'Not authenticated!'})
     }
 }

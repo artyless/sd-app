@@ -10,7 +10,7 @@ router.post('/', auth, async (req: Request, res: Response) => {
     try {
         const {id, userName, firstName, lastName, email} = req.body
 
-        const user = await prisma.user.update({
+        const user: User = await prisma.user.update({
             where: {id: id},
             data: {
                 userName,
@@ -27,8 +27,9 @@ router.post('/', auth, async (req: Request, res: Response) => {
             lastName: user.lastName,
             email: user.email
         })
-    } catch (e) {
-        res.status(500).json({message: "Something went wrong, try again"})
+    } catch (err: any) {
+        console.error(err.message)
+        res.status(500).json({message: 'Something went wrong, try again'})
     }
 })
 

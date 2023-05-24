@@ -1,15 +1,14 @@
 import {Router, Request, Response} from 'express'
 import {PrismaClient, User} from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import {check, validationResult} from 'express-validator'
+import {check, Result, validationResult} from 'express-validator'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 
 dotenv.config()
+const JWT_SECRET: string = process.env.JWT_SECRET!
 
-const JWT_SECRET: string | undefined = process.env.JWT_SECRET
-
-const router: Router = Router()
+const router = Router()
 const prisma = new PrismaClient()
 
 // /api/auth/register
@@ -23,7 +22,7 @@ router.post(
     ],
     async (req: Request, res: Response) => {
         try {
-            const errors = validationResult(req)
+            const errors: Result = validationResult(req)
 
             if (!errors.isEmpty()) {
                 return res.status(400).json({
@@ -34,14 +33,13 @@ router.post(
 
             const {userName, firstName, email, password} = req.body
 
-            const candidate = await prisma.user.findFirst({where: {email}})
+            const candidate: User | null = await prisma.user.findFirst({where: {email}})
 
             if (candidate) {
                 return res.status(400).json({message: 'This user already exist'})
             }
 
-            // Почему только 12
-            const hashedPassword = await bcrypt.hash(password, 12)
+            const hashedPassword: string = await bcrypt.hash(password, 12)
 
             await prisma.user.create({
                 data: {
@@ -53,8 +51,9 @@ router.post(
             })
 
             res.status(201).json({message: 'User created'})
-        } catch (e) {
-            res.status(500).json({message: "Something went wrong, try again"})
+        } catch (err: any) {
+            console.error(err.message)
+            res.status(500).json({message: 'Something went wrong, try again'})
         }
     })
 
@@ -68,7 +67,7 @@ router.post(
     ],
     async (req: Request, res: Response) => {
         try {
-            const errors = validationResult(req)
+            const errors: Result = validationResult(req)
 
             if (!errors.isEmpty()) {
                 return res.status(400).json({
@@ -98,11 +97,11 @@ router.post(
             const token = jwt.sign(
                 {id: user.id},
                 JWT_SECRET,
-                {expiresIn: '1h'}
+                {expiresIn: '8h'}
             )
 
             res.json({
-                token,
+                token: token,
                 id: user.id,
                 userName: user.userName,
                 firstName: user.firstName,
@@ -110,8 +109,9 @@ router.post(
                 email: user.email,
                 createdAt: user.createdAt
             })
-        } catch (e) {
-            res.status(500).json({message: "Something went wrong, try again"})
+        } catch (err: any) {
+            console.error(err.message)
+            res.status(500).json({message: 'Something went wrong, try again'})
         }
     })
 

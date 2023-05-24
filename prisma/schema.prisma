@@ -23,7 +23,7 @@ model Image {
 model Collection {
   id           Int     @id @default(autoincrement())
   title        String  @db.VarChar(32)
-  amountImages Int?
+  amountImages Int?    @default(0)
   bucket       String  @unique @db.VarChar(255)
   userId       Int
   user         User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -36,7 +36,7 @@ model User {
   id             Int          @id @default(autoincrement())
   userName       String       @unique @db.VarChar(32)
   firstName      String       @db.VarChar(32)
-  lastName       String?      @db.VarChar(32)
+  lastName       String       @default("") @db.VarChar(32)
   email          String       @unique @db.VarChar(64)
   hashedPassword String       @db.VarChar(255)
   createdAt      DateTime     @default(now()) @db.Timestamp(6)

@@ -9,7 +9,7 @@
     "start": "npm run build && node build/app",
     "client": "npm run start --prefix client",
     "dev": "npx nodemon",
-    "full": "concurrently \"npx nodemon\" \"npm run client\" \"npm run dev --prefix processing-server\"",
+    "full": "concurrently \"npx nodemon\" \"npm run client\"",
     "lint": "npx eslint ./",
     "format": "npx eslint ./ --fix"
   },
