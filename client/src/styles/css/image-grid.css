@@ -1,8 +1,3 @@
-/*TODO выше?*/
-.container {
-  margin: 5%;
-}
-
 .image-grid {
   display: grid;
   gap: 20px;

@@ -1,16 +1,19 @@
-import React, {useContext, useEffect, useRef, useState} from 'react'
-import {AuthContext} from '../context/AuthContext'
-import {useHttp} from '../hooks/http.hook'
+import React, {useEffect, useRef, useState} from 'react'
 import {useMessage} from '../hooks/message.hook'
-import {IUserData} from '../models'
+import {IUserData} from '../../../models/user'
 import '../styles/css/pop-up.css'
 import '../styles/css/collection.css'
-
-const STORAGE_NAME = 'userData'
+import {
+    useCreateCollectionMutation,
+    useDeleteCollectionMutation,
+    useGetCollectionsQuery
+} from '../store/collection/collection.api'
+import {useAppSelector} from '../hooks/redux'
+import {useGetProfileQuery} from '../store/profile/profile.api'
+import {useGetImagesQuery} from '../store/image/image.api'
 
 export const ProfilePage = () => {
-    const auth = useContext(AuthContext)
-    const {request, loading, error, clearError} = useHttp()
+    const {user} = useAppSelector(state => state.auth)
     const message = useMessage()
     const [isEdit, setIsEdit] = useState<boolean>(false)
     const [collections, setCollections] = useState<any>('')
@@ -19,86 +22,86 @@ export const ProfilePage = () => {
     const [isPopUpOpen, setIsPopUpOpen] = useState<boolean>(false)
     const popupRef = useRef(null)
 
-    useEffect(() => {
-        message(error)
-        clearError()
-    }, [error, message, clearError])
+    const [createCollection] = useCreateCollectionMutation()
+    const [deleteCollection, {isLoading, error}] = useDeleteCollectionMutation()
+    const {data: imagesResponse} = useGetImagesQuery('Saved')
+    const {data: profileResponse} = useGetProfileQuery('')
+    const {data: collectionResponse} = useGetCollectionsQuery('')
 
     useEffect(() => {
-        const handleGetCollections = async () => {
-            try {
-                const response: any = await request('/api/collection/', 'GET', null, {Authorization: `Bearer ${auth.token}`})
-
-                if (response) {
-                    setCollections(response.data)
-                }
-            } catch (e) {
-            }
+        if (collectionResponse) {
+            setCollections(collectionResponse.data)
         }
 
-        handleGetCollections().then()
-    }, [])
+        if (profileResponse) {
+
+        }
+
+        if (imagesResponse) {
+            setImages(imagesResponse.images)
+        }
+    }, [collectionResponse, profileResponse, imagesResponse])
 
     const [userData, setUserData] = useState<IUserData>({
-        id: auth.id,
-        userName: `${auth.userName}`,
-        firstName: `${auth.firstName}`,
-        lastName: `${auth.lastName}`,
-        email: `${auth.email}`,
-        createdAt: `${auth.createdAt}`
+        id: user.id,
+        userName: `${user.userName}`,
+        firstName: `${user.firstName}`,
+        lastName: `${user.lastName}`,
+        email: `${user.email}`,
+        createdAt: user.createdAt
     })
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setUserData({...userData, [event.target.id]: event.target.value})
     }
 
-    const createCollection = async () => {
+    const createCollectionHandler = async () => {
         try {
-            const data = await request('/api/collection/create', 'POST', {
-                id: auth.id,
-                collectionName: collectionName
-            }, {Authorization: `Bearer ${auth.token}`})
-            console.log(data)
-        } catch (e) {
+            // const data = await request('/api/collection/', 'POST', {
+            //     id: auth.id,
+            //     collectionName: collectionName
+            // }, {Authorization: `Bearer ${auth.token}`})
+
+            const response = await createCollection({id: user.id, collectionName: collectionName})
+        } catch (err) {
+            console.error('ERROR: ', err)
         }
     }
 
     const editUserProfile = async () => {
         try {
-            const data: any = await request('/api/profile/', 'POST', {...userData}, {Authorization: `Bearer ${auth.token}`})
-            if (data) {
-                auth.userName = data.userName
-                auth.firstName = data.firstName
-                auth.lastName = data.lastName
-                auth.email = data.email
-
-                localStorage.setItem(STORAGE_NAME, JSON.stringify({
-                    token: auth.token,
-                    id: auth.id,
-                    userName: data.userName,
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    email: data.email,
-                    createdAt: data.createdAt,
-                    isAuthenticated: true
-                }))
-                setIsEdit(false)
-            }
-        } catch (e) {
+            // const data: any = await request('/api/profile/', 'POST', {...userData}, {Authorization: `Bearer ${auth.token}`})
+            // if (data) {
+            //     auth.userName = data.userName
+            //     auth.firstName = data.firstName
+            //     auth.lastName = data.lastName
+            //     auth.email = data.email
+            //
+            //     localStorage.setItem(STORAGE_NAME, JSON.stringify({
+            //         token: auth.token,
+            //         id: auth.id,
+            //         userName: data.userName,
+            //         firstName: data.firstName,
+            //         lastName: data.lastName,
+            //         email: data.email,
+            //         createdAt: data.createdAt,
+            //         isAuthenticated: true
+            //     }))
+            //     setIsEdit(false)
+            // }
+        } catch (err) {
         }
     }
 
     const handleGetImages = async (collection: string) => {
         try {
-            const response: any = await request('/api/image/', 'POST', {
-                id: auth.id,
-                collectionName: collection
-            }, {Authorization: `Bearer ${auth.token}`})
+            // const response: any = await request(`/api/image/${encodeURIComponent(collection)}`, 'GET', null, {Authorization: `Bearer ${user.token}`})
 
-            if (response) {
-                setImages(response.images)
-            }
-        } catch (e) {
+            // if (response) {
+            //     setImages(response.images)
+            // }
+        } catch (err) {
+            console.error('ERROR: ', err)
         }
     }
 
@@ -114,14 +117,14 @@ export const ProfilePage = () => {
         setCollectionName(event.target.value)
     }
 
-    const deleteCollection = async (collection: string) => {
+    const deleteCollectionHandler = async (collection: string) => {
         try {
-            const response = await request('/api/collection/delete', 'POST', {
-                    id: auth.id,
-                    collectionName: collection
-                },
-                {Authorization: `Bearer ${auth.token}`})
-        } catch (e) {
+            const response = await deleteCollection({
+                id: user.id,
+                collectionName: collection
+            })
+        } catch (err) {
+            console.error('ERROR: ', err)
         }
     }
 
@@ -136,12 +139,12 @@ export const ProfilePage = () => {
                             <input
                                 type="text"
                                 id="userName"
-                                value={auth.userName}
-                                disabled={loading}
+                                value={user.userName}
+                                disabled={isLoading}
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{auth.userName}</div>
+                            <div>{user.userName}</div>
                     }
                 </div>
 
@@ -152,12 +155,12 @@ export const ProfilePage = () => {
                             <input
                                 type="text"
                                 id="firstName"
-                                value={auth.firstName}
-                                disabled={loading}
+                                value={user.firstName}
+                                disabled={isLoading}
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{auth.firstName}</div>
+                            <div>{user.firstName}</div>
                     }
                 </div>
 
@@ -168,12 +171,12 @@ export const ProfilePage = () => {
                             <input
                                 type="text"
                                 id="lastName"
-                                value={auth.lastName}
-                                disabled={loading}
+                                value={user.lastName}
+                                disabled={isLoading}
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{auth.lastName}</div>
+                            <div>{user.lastName}</div>
                     }
                 </div>
 
@@ -184,18 +187,18 @@ export const ProfilePage = () => {
                             <input
                                 type="email"
                                 id="email"
-                                value={auth.email}
-                                disabled={loading}
+                                value={user.email}
+                                disabled={isLoading}
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{auth.email}</div>
+                            <div>{user.email}</div>
                     }
                 </div>
 
                 <div>
                     <p><b>Created at:</b></p>
-                    <div>{auth.createdAt}</div>
+                    {/*<div>{auth.createdAt}</div>*/}
                 </div>
             </div>
 
@@ -224,11 +227,11 @@ export const ProfilePage = () => {
                       <input
                         type="text"
                         id="collection"
-                        disabled={loading}
+                        disabled={isLoading}
                         onChange={changeCollectionHandler}
                       />
                     </div>
-                    <button onClick={createCollection}>CREATE COLLECTION</button>
+                    <button onClick={createCollectionHandler}>CREATE COLLECTION</button>
                     <button onClick={closePopup}>CLOSE POP UP</button>
                   </div>
                 }
@@ -239,13 +242,13 @@ export const ProfilePage = () => {
                     <div key={index} className="collection">
                         <div onClick={() => handleGetImages(collection.title)}>{collection.title}</div>
                         <div>{collection.amountImages > 0 ? collection.amountImages : 0}</div>
-                        <button onClick={() => deleteCollection(collection.title)}>Delete</button>
+                        <button onClick={() => deleteCollectionHandler(collection.title)}>Delete</button>
                     </div>
                 ))}
             </div>
 
             <div>
-                {images && images.map((img:any) => (
+                {images && images.map((img: any) => (
                         <img key={img.data.id} src={`data:image/png;base64,${img.imageStr}`} alt="Generated image"/>
                     )
                 )}

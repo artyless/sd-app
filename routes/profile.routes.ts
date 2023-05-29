@@ -6,7 +6,7 @@ const router: Router = Router()
 const prisma = new PrismaClient()
 
 // /api/profile/
-router.post('/', auth, async (req: Request, res: Response) => {
+router.put('/', auth, async (req: Request, res: Response) => {
     try {
         const {id, userName, firstName, lastName, email} = req.body
 
@@ -27,8 +27,29 @@ router.post('/', auth, async (req: Request, res: Response) => {
             lastName: user.lastName,
             email: user.email
         })
-    } catch (err: any) {
-        console.error(err.message)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({message: 'Something went wrong, try again'})
+    }
+})
+
+// /api/profile/
+router.get('/', auth, async (req: Request, res: Response) => {
+    try {
+        const userId = req.user.id
+
+        const user = await prisma.user.findFirst({
+            where: {id: userId},
+        }) as User
+
+        res.status(201).json({
+            userName: user.userName,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email
+        })
+    } catch (err) {
+        console.error(err)
         res.status(500).json({message: 'Something went wrong, try again'})
     }
 })

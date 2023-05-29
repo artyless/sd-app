@@ -20,9 +20,9 @@ router.post('/txt2img', auth, async (req: Request, res: Response) => {
         }
 
         const response = await axios.post(SD_API_URL + '/txt2img', sendingData)
-        res.status(200).json({message: 'Image has been generated', data: response.data})
-    } catch (err: any) {
-        console.error(err.message)
+        res.status(200).json({message: 'Image has been generated', ...response.data})
+    } catch (err) {
+        console.error(err)
         res.status(500).json({message: 'Error while generating image'})
     }
 })

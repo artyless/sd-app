@@ -51,8 +51,8 @@ router.post(
             })
 
             res.status(201).json({message: 'User created'})
-        } catch (err: any) {
-            console.error(err.message)
+        } catch (err) {
+            console.error(err)
             res.status(500).json({message: 'Something went wrong, try again'})
         }
     })
@@ -109,8 +109,8 @@ router.post(
                 email: user.email,
                 createdAt: user.createdAt
             })
-        } catch (err: any) {
-            console.error(err.message)
+        } catch (err) {
+            console.error(err)
             res.status(500).json({message: 'Something went wrong, try again'})
         }
     })

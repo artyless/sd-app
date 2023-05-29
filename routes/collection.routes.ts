@@ -54,8 +54,8 @@ router.post('/', auth, async (req: Request, res: Response) => {
         })
 
         res.status(200).json({message: 'Collection has been created'})
-    } catch (err: any) {
-        console.error(err.message)
+    } catch (err) {
+        console.error(err)
         res.status(500).json({message: 'Error creating collection'})
     }
 })
@@ -95,8 +95,8 @@ router.delete('/', auth, async (req: Request, res: Response) => {
                 res.status(200).json({message: 'Collection has been deleted'})
             }())
         })
-    } catch (err: any) {
-        console.error(err.message)
+    } catch (err) {
+        console.error(err)
         res.status(500).json({message: 'Error deleting collection'})
     }
 })
@@ -113,8 +113,8 @@ router.get('/', auth, async (req: Request, res: Response) => {
         })
 
         res.status(200).json({data: collections})
-    } catch (err: any) {
-        console.error(err.message)
+    } catch (err) {
+        console.error(err)
         res.status(500).json({message: 'Something went wrong, try again'})
     }
 })

@@ -4,14 +4,13 @@ export const useHttp = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
 
-    // Исправить типы Typescript !!!!!
     const request = useCallback(async <T>(
         url: string,
-        method: 'GET' | 'POST' = 'GET',
+        method: 'GET' | 'POST' | 'DELETE' = 'GET',
         // body: Record<string, any> | null = null,
         body: any | null = null,
         headers: Record<string, string> = {}
-    ): Promise<T> => {
+    ) => {
         setLoading(true)
         try {
             if (body) {

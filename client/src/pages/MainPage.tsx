@@ -1,72 +1,9 @@
-import {useHttp} from '../hooks/http.hook'
-import {useMessage} from '../hooks/message.hook'
-import {AuthContext} from '../context/AuthContext'
-
-// export const MainPage = () => {
-//     const [image, setImage] = useState<Blob>()
-//     const [imageStr, setImageStr] = useState<string>('')
-//     const [recognized, setRecognized] = useState<string>('')
-//     const auth = useContext(AuthContext)
-//     const {request, loading, error, clearError} = useHttp()
-//     const message = useMessage()
-//
-//     const reader = new FileReader()
-//
-//     useEffect(() => {
-//         message(error)
-//         clearError()
-//     }, [error, message, clearError])
-//
-//     reader.addEventListener('load', () => {
-//         if (reader.result) {
-//             if (typeof reader.result === "string") {
-//                 const res = reader.result.replace(/^data:image\/(png|jpeg|jpg);base64,/, '')
-//                 setImageStr(res)
-//             }
-//         }
-//     })
-//
-//     const imageChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-//         if (event.target.files) {
-//             setImage(event.target.files[0])
-//             reader.readAsDataURL(event.target.files[0])
-//         }
-//     }
-//
-//     const sendImage = async () => {
-//         try {
-//             // await request('/api/image/', 'POST', {id: auth.id, imageStr: imageStr}, {Authorization: `Bearer ${auth.token}`})
-//             const recognizedClass = await request('/api/image/', 'POST', {id: auth.id, imageStr: image})
-//
-//             // console.log(recognizedClass.result)
-//             // @ts-ignore
-//             setRecognized(recognizedClass.result)
-//
-//             // if (recognizedClass) {
-//             //     setRecognized(recognizedClass.result)
-//             // }
-//             // src={URL.createObjectURL(image)}
-//         } catch {
-//         }
-//     }
-//
-//     return (
-//         <div>
-//             <h1>Main Page</h1>
-//             <input id="image" type="file" onChange={imageChangeHandler}/>
-//             {image && <img src={URL.createObjectURL(image)} width="360" height="240" alt="alt-text"/>}
-//             <button onClick={sendImage} disabled={loading}>Send image to server</button>
-//             {recognized && <p>{recognized}</p>}
-//         </div>
-//     )
-// }
-
-
-import React, {useState, ChangeEvent, FormEvent, useEffect, useContext} from 'react'
+import React, {useState, ChangeEvent, FormEvent, useEffect} from 'react'
 import ScrollToTop from '../components/ScrollToTop'
 import '../styles/css/search.css'
 import '../styles/css/grid-type-selector.css'
 import '../styles/css/image-grid.css'
+import '../styles/css/index.css'
 
 interface Image {
     id: number
@@ -164,13 +101,13 @@ export const MainPage = () => {
         <div className="container">
             <form className="form-container" onSubmit={handleSearchSubmit}>
                 <input
-                    className="search-input"
+                    className="input"
                     type="text"
                     value={searchQuery}
                     onChange={handleSearchChange}
                     placeholder="Введите запрос"
                 />
-                <button className="search-button" type="submit">Найти</button>
+                <button className="button" type="submit">Найти</button>
             </form>
 
             <ScrollToTop/>
@@ -196,7 +133,6 @@ export const MainPage = () => {
                 </label>
             </div>
 
-
             <div className={`image-grid ${gridType}`}>
                 {images.map((image: Image) => (
                     <div key={image.id} className="image-grid-item">
@@ -204,6 +140,8 @@ export const MainPage = () => {
                         <div className="image-overlay">
                             <p>{image.url}</p>
                             <button className="like-button">Like</button>
+                            <button className="like-button">Save</button>
+                            <button className="like-button">Download</button>
                         </div>
                     </div>
                 ))}

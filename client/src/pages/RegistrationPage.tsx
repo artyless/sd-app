@@ -1,15 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react'
-import {useHttp} from '../hooks/http.hook'
+import React, {useEffect, useState} from 'react'
 import {useMessage} from '../hooks/message.hook'
-import {AuthContext} from '../context/AuthContext'
-import {IUserRegistrationData} from '../models'
+import {IUserData} from '../../../models/user'
 import {Link} from 'react-router-dom'
+import {useRegisterMutation} from '../store/auth/auth.api'
+import {TypeServerError} from "../types/serverError"
 
 export const RegistrationPage = () => {
-    const auth = useContext(AuthContext)
-    const {request, loading, error, clearError} = useHttp()
+    const [register, {isLoading, error}] = useRegisterMutation()
     const message = useMessage()
-    const [form, setForm] = useState<IUserRegistrationData>({
+    const [form, setForm] = useState<IUserData>({
         userName: '',
         firstName: '',
         email: '',
@@ -18,9 +17,11 @@ export const RegistrationPage = () => {
     // const [isRegistrationDataOkay, setIsRegistrationDataOkay] = useState<boolean>(true)
 
     useEffect(() => {
-        message(error)
-        clearError()
-    }, [error, message, clearError])
+        if (error) {
+            const serverError = error as TypeServerError
+            message(serverError.data.message)
+        }
+    }, [error])
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setForm({...form, [event.target.id]: event.target.value})
@@ -35,9 +36,18 @@ export const RegistrationPage = () => {
 
     const registerHandler = async () => {
         try {
-            console.log({...form})
-            const data = await request('/api/auth/register', 'POST', {...form})
-        } catch (e) {
+            const response = await register({...form})
+
+            // TODO
+            // ТУТ ПОЛЬЗОВАТЕЛЯ ДОЛЖНО ЗАКИДЫВАТЬ В СИСТЕМУ И У НЕГО УЖЕ БУДЕТ ID
+            // if(data.message === 'User created') {
+            //     await request('/api/collection/create', 'POST', {
+            //         id: auth.id,
+            //         collectionName: 'Saved'
+            //     }, {Authorization: `Bearer ${auth.token}`})
+            // }
+        } catch (err) {
+            console.error('ERROR: ', err)
         }
     }
 
@@ -81,7 +91,7 @@ export const RegistrationPage = () => {
             <div>
                 <button
                     onClick={registerHandler}
-                    disabled={loading}
+                    disabled={isLoading}
                 >
                     Registration
                 </button>

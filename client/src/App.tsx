@@ -1,40 +1,28 @@
-import React from 'react'
 import {BrowserRouter as Router} from 'react-router-dom'
 import {useRoutes} from './routes'
-import {useAuth} from './hooks/auth.hook'
-import {AuthContext} from './context/AuthContext'
 import './App.css'
 import {Navbar} from './components/Navbar'
 import {Loader} from './components/Loader'
-
+import {useAppSelector} from './hooks/redux'
 
 function App() {
-    const {login, logout, token, userData, ready} = useAuth()
-    const isAuthenticated: boolean = !!token
+    const {user, isLoading} = useAppSelector(state => state.auth)
+    const isAuthenticated: boolean = !!user.token
+
     const routes = useRoutes(isAuthenticated)
 
-    const {id, userName, firstName, lastName, email, createdAt} = userData
-
-    if (!ready) {
+    if (isLoading) {
         return <Loader />
     }
 
-    // Почему мы храним данные в authHook, в authContext и в LocalStorage.........
     return (
-        <AuthContext.Provider value={{
-            token, id, userName, firstName, lastName, email, createdAt, login, logout, isAuthenticated
-        }}>
-            <Router>
-                <div>
-                    {isAuthenticated && <Navbar />}
-                    {routes}
-                </div>
-            </Router>
-        </AuthContext.Provider>
+        <Router>
+            <div>
+                {isAuthenticated && <Navbar />}
+                {routes}
+            </div>
+        </Router>
     )
 }
 
 export default App
-
-// TODO
-//

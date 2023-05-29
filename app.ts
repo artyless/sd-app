@@ -14,12 +14,12 @@ const start = async () => {
         app.listen(PORT, () => {
             console.log(`[server]: Server is running at http://localhost:${PORT}`)
         })
-    } catch (err: any) {
-        console.error('Server Error: ', err.message)
+    } catch (err) {
+        console.error('Server Error: ', err)
         process.exit(1)
     }
 }
 
-start().catch((err: Error) => {
+start().catch((err) => {
     console.error('Error. Server was stopped: ', err)
 })

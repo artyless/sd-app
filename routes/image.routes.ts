@@ -48,8 +48,8 @@ router.post('/', auth, async (req: Request, res: Response) => {
         })
 
         res.status(200).json({message: 'Image has been saved'})
-    } catch (err: any) {
-        console.error(err.message)
+    } catch (err) {
+        console.error(err)
         res.status(500).json({message: 'Something went wrong, try again'})
     }
 })
@@ -57,7 +57,7 @@ router.post('/', auth, async (req: Request, res: Response) => {
 // /api/image/
 router.get('/:collectionName', auth, async (req: Request, res: Response) => {
     try {
-        const {id} = req.body
+        const id = req.user.id
         const collectionName: string = req.params.collectionName
 
         const collection: Collection | null = await prisma.collection.findFirst({
@@ -82,12 +82,12 @@ router.get('/:collectionName', auth, async (req: Request, res: Response) => {
             return res.status(500).json({message: 'Images not found'})
         }
 
-        const objects: any = []
+        const objects = []
 
         for (const image of images) {
             const stream = await minioClient.getObject(collection.bucket, image.address)
 
-            const chunks: any = []
+            const chunks = []
 
             for await (const chunk of stream) {
                 chunks.push(chunk)
@@ -98,8 +98,8 @@ router.get('/:collectionName', auth, async (req: Request, res: Response) => {
         }
 
         res.status(200).json({images: objects})
-    } catch (err: any) {
-        console.error(err.message)
+    } catch (err) {
+        console.error(err)
         res.status(500).json({message: 'Something went wrong, try again'})
     }
 })

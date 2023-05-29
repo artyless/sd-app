@@ -27,8 +27,8 @@ export function auth(req: Request, res: Response, next: NextFunction): Response 
 
         req.user = jwt.verify(token, JWT_SECRET) as {id: number}
         next()
-    } catch (err: any) {
-        console.error(err.message)
+    } catch (err) {
+        console.error(err)
         return res.status(401).json({message: 'Not authenticated!'})
     }
 }
