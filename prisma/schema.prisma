@@ -8,16 +8,20 @@ datasource db {
 }
 
 model Image {
-  id           Int        @id @default(autoincrement())
-  prompt       String     @db.VarChar(255)
-  address      String     @unique @db.VarChar(255)
-  published    Boolean    @default(false)
-  likeCount    Int        @default(0)
-  createdAt    DateTime   @default(now()) @db.Timestamp(6)
-  userId       Int
-  collectionId Int
-  Collection   Collection @relation(fields: [collectionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User         User       @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id             Int        @id @default(autoincrement())
+  prompt         String     @db.VarChar(255)
+  translated     String     @db.VarChar(255)
+  language       String     @db.VarChar(8)
+  storageAddress String     @unique @db.VarChar(255)
+  searchId       String?    @unique @default("") @db.VarChar(255)
+  published      Boolean    @default(false)
+  likeCount      Int        @default(0)
+  createdAt      DateTime   @default(now()) @db.Timestamp(6)
+  userId         Int
+  collectionId   Int
+  Collection     Collection @relation(fields: [collectionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User           User       @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Like           Like[]
 }
 
 model Collection {
@@ -42,4 +46,14 @@ model User {
   createdAt      DateTime     @default(now()) @db.Timestamp(6)
   collections    Collection[]
   Image          Image[]
+  Like           Like[]
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  userId    Int
+  imageId   Int
+  Image     Image    @relation(fields: [imageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

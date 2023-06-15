@@ -5,13 +5,13 @@ import {PrismaClient, User} from '@prisma/client'
 const router: Router = Router()
 const prisma = new PrismaClient()
 
-// /api/profile/
+// /api/user/
 router.put('/', auth, async (req: Request, res: Response) => {
     try {
-        const {id, userName, firstName, lastName, email} = req.body
+        const {userId, userName, firstName, lastName, email} = req.body
 
         const user: User = await prisma.user.update({
-            where: {id: id},
+            where: {id: userId},
             data: {
                 userName,
                 firstName,
@@ -22,10 +22,12 @@ router.put('/', auth, async (req: Request, res: Response) => {
 
         res.status(201).json({
             message: 'Profile data changed',
-            userName: user.userName,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email
+            user: {
+                userName: user.userName,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email
+            }
         })
     } catch (err) {
         console.error(err)
@@ -33,7 +35,7 @@ router.put('/', auth, async (req: Request, res: Response) => {
     }
 })
 
-// /api/profile/
+// /api/user/
 router.get('/', auth, async (req: Request, res: Response) => {
     try {
         const userId = req.user.id
@@ -43,10 +45,12 @@ router.get('/', auth, async (req: Request, res: Response) => {
         }) as User
 
         res.status(201).json({
-            userName: user.userName,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email
+            user: {
+                userName: user.userName,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email
+            }
         })
     } catch (err) {
         console.error(err)

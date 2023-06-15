@@ -1,4 +1,4 @@
-export interface IUserData {
+export interface IUser {
     token?: string
     id?: number
     userName: string
@@ -9,15 +9,9 @@ export interface IUserData {
     createdAt?: Date
 }
 
-// export interface ILoginUserData extends IUserData {
+// export interface ILoginUserData extends IUser {
 //     token: string
 // }
-
-export interface IContext extends IUserData {
-    login: (jwtToken: string, id: number, userName: string, firstName: string, lastName: string, email: string, createdAt: Date) => void
-    logout: () => void
-    isAuthenticated: boolean
-}
 
 // export interface IUserRegistrationData {
 //     userName: string

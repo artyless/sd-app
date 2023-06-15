@@ -10,13 +10,13 @@ const prisma = new PrismaClient()
 // /api/collection/
 router.post('/', auth, async (req: Request, res: Response) => {
     try {
-        const {id, collectionName} = req.body
+        const {userId, collectionName} = req.body
 
         if (!collectionName) {
             return res.status(500).json({message: 'Collection\'\s name is empty!'})
         }
 
-        const bucketName: string = id.toString() + generateUniqueFileName(collectionName)
+        const bucketName: string = userId.toString() + generateUniqueFileName(collectionName)
 
         const isBucketExist: boolean = await minioClient.bucketExists(bucketName)
 
@@ -26,7 +26,7 @@ router.post('/', auth, async (req: Request, res: Response) => {
 
         const existingCollection: Collection | null = await prisma.collection.findFirst({
             where: {
-                userId: id,
+                userId: userId,
                 title: {
                     equals: collectionName,
                     mode: 'insensitive'
@@ -49,7 +49,7 @@ router.post('/', auth, async (req: Request, res: Response) => {
             data: {
                 title: collectionName,
                 bucket: bucketName,
-                userId: id
+                userId: userId
             }
         })
 
@@ -63,7 +63,7 @@ router.post('/', auth, async (req: Request, res: Response) => {
 // /api/collection/
 router.delete('/', auth, async (req: Request, res: Response) => {
     try {
-        const {id, collectionName} = req.body
+        const {userId, collectionName} = req.body
 
         if (!collectionName) {
             return res.status(500).json({message: 'Collection\'\s name is empty!'})
@@ -71,7 +71,7 @@ router.delete('/', auth, async (req: Request, res: Response) => {
 
         const collection: Collection | null = await prisma.collection.findFirst({
             where: {
-                userId: id,
+                userId: userId,
                 title: collectionName
             }
         })
@@ -112,7 +112,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
             }
         })
 
-        res.status(200).json({data: collections})
+        res.status(200).json({collections: collections})
     } catch (err) {
         console.error(err)
         res.status(500).json({message: 'Something went wrong, try again'})

@@ -11,12 +11,14 @@ const router: Router = Router()
 // /api/sd/txt2img
 router.post('/txt2img', auth, async (req: Request, res: Response) => {
     try {
-        const {promptText, imageCount} = req.body
+        const {promptText, imageCount, imageSize} = req.body
 
         const sendingData = {
             prompt: promptText,
-            steps: 10,
-            n_iter: imageCount
+            steps: 20,
+            n_iter: imageCount,
+            width: imageSize,
+            height: imageSize
         }
 
         const response = await axios.post(SD_API_URL + '/txt2img', sendingData)

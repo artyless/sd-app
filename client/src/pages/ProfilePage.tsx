@@ -1,48 +1,60 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {useMessage} from '../hooks/message.hook'
-import {IUserData} from '../../../models/user'
-import '../styles/css/pop-up.css'
-import '../styles/css/collection.css'
+import {useActions} from '../hooks/actions'
 import {
     useCreateCollectionMutation,
     useDeleteCollectionMutation,
     useGetCollectionsQuery
 } from '../store/collection/collection.api'
 import {useAppSelector} from '../hooks/redux'
-import {useGetProfileQuery} from '../store/profile/profile.api'
-import {useGetImagesQuery} from '../store/image/image.api'
+import {useGetUserQuery} from '../store/profile/user.api'
+import {useChangePublicityMutation, useDeleteImageMutation, useGetImagesQuery} from '../store/image/image.api'
+import {IUser} from '../models/user'
+import {IImage, IImageData} from '../models/image'
+import {ICollection} from '../models/collection'
+import '../styles/css/pop-up.css'
+import '../styles/css/collection.css'
 
 export const ProfilePage = () => {
     const {user} = useAppSelector(state => state.auth)
     const message = useMessage()
     const [isEdit, setIsEdit] = useState<boolean>(false)
-    const [collections, setCollections] = useState<any>('')
-    const [collectionName, setCollectionName] = useState<string>('')
-    const [images, setImages] = useState<any>('')
+    const [collections, setCollections] = useState<ICollection[]>()
+    const [collectionName, setCollectionName] = useState<ICollection['title']>('')
+    const [images, setImages] = useState<IImageData[]>()
+    const [userInfo, setUserInfo] = useState<IUser>()
     const [isPopUpOpen, setIsPopUpOpen] = useState<boolean>(false)
     const popupRef = useRef(null)
+    const [gridType, setGridType] = useState<'grid3' | 'grid4'>('grid3')
 
+    const {data: imagesResponse} = useGetImagesQuery({collectionName: 'Saved', token: user.token})
+    const {data: userResponse} = useGetUserQuery({token: user.token})
+    const {data: collectionResponse, refetch: refetchCollections} = useGetCollectionsQuery({token: user.token})
     const [createCollection] = useCreateCollectionMutation()
     const [deleteCollection, {isLoading, error}] = useDeleteCollectionMutation()
-    const {data: imagesResponse} = useGetImagesQuery('Saved')
-    const {data: profileResponse} = useGetProfileQuery('')
-    const {data: collectionResponse} = useGetCollectionsQuery('')
+    const [deleteImage, {isSuccess: isDeleteSuccess}] = useDeleteImageMutation()
+    const [changePublicity] = useChangePublicityMutation()
+    const {removeFromLocalStorage} = useActions()
 
     useEffect(() => {
         if (collectionResponse) {
-            setCollections(collectionResponse.data)
+            setCollections(collectionResponse.collections)
         }
 
-        if (profileResponse) {
-
+        if (userResponse) {
+            setUserInfo(userResponse.user)
         }
 
         if (imagesResponse) {
             setImages(imagesResponse.images)
         }
-    }, [collectionResponse, profileResponse, imagesResponse])
 
-    const [userData, setUserData] = useState<IUserData>({
+        if (isDeleteSuccess) {
+            refetchCollections()
+        }
+    }, [collectionResponse, userResponse, imagesResponse, isDeleteSuccess])
+
+    const [userData, setUserData] = useState<IUser>({
         id: user.id,
         userName: `${user.userName}`,
         firstName: `${user.firstName}`,
@@ -55,14 +67,17 @@ export const ProfilePage = () => {
         setUserData({...userData, [event.target.id]: event.target.value})
     }
 
+    const handleGridTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setGridType(event.target.value as 'grid3' | 'grid4')
+    }
+
     const createCollectionHandler = async () => {
         try {
-            // const data = await request('/api/collection/', 'POST', {
-            //     id: auth.id,
-            //     collectionName: collectionName
-            // }, {Authorization: `Bearer ${auth.token}`})
-
-            const response = await createCollection({id: user.id, collectionName: collectionName})
+            const response = await createCollection({
+                userId: user.id,
+                collectionName: collectionName,
+                token: user.token
+            })
         } catch (err) {
             console.error('ERROR: ', err)
         }
@@ -70,7 +85,7 @@ export const ProfilePage = () => {
 
     const editUserProfile = async () => {
         try {
-            // const data: any = await request('/api/profile/', 'POST', {...userData}, {Authorization: `Bearer ${auth.token}`})
+            // const data = await request('/api/profile/', 'POST', {...userData}, {Authorization: `Bearer ${auth.token}`})
             // if (data) {
             //     auth.userName = data.userName
             //     auth.firstName = data.firstName
@@ -95,7 +110,7 @@ export const ProfilePage = () => {
 
     const handleGetImages = async (collection: string) => {
         try {
-            // const response: any = await request(`/api/image/${encodeURIComponent(collection)}`, 'GET', null, {Authorization: `Bearer ${user.token}`})
+            // const response = await request(`/api/image/${encodeURIComponent(collection)}`, 'GET', null, {Authorization: `Bearer ${user.token}`})
 
             // if (response) {
             //     setImages(response.images)
@@ -120,90 +135,109 @@ export const ProfilePage = () => {
     const deleteCollectionHandler = async (collection: string) => {
         try {
             const response = await deleteCollection({
-                id: user.id,
-                collectionName: collection
+                userId: user.id,
+                collectionName: collection,
+                token: user.token
             })
         } catch (err) {
             console.error('ERROR: ', err)
         }
     }
 
-    return (
-        <div>
+    const deleteImageHandler = async (id: number) => {
+        try {
+            const response = await deleteImage({id: id, token: user.token})
+        } catch (err) {
+            console.error('ERROR: ', err)
+        }
+    }
 
-            <div>
+    const publicityHandler = async (image: IImage, bucket: string) => {
+        try {
+            const response = await changePublicity({image, bucket, token: user.token})
+        } catch (err) {
+            console.error('ERROR: ', err)
+        }
+    }
+
+    return (
+        <div className="container">
+            {
+                userInfo &&
+              <div>
                 <div>
-                    <p><b>Username:</b></p>
                     {
                         isEdit ?
                             <input
+                                className="input"
                                 type="text"
                                 id="userName"
-                                value={user.userName}
+                                value={userInfo.userName}
                                 disabled={isLoading}
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{user.userName}</div>
+                            <div>{userInfo.userName}</div>
                     }
                 </div>
 
                 <div>
-                    <p><b>First name:</b></p>
                     {
                         isEdit ?
                             <input
+                                className="input"
                                 type="text"
                                 id="firstName"
-                                value={user.firstName}
+                                value={userInfo.firstName}
                                 disabled={isLoading}
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{user.firstName}</div>
+                            <div>{userInfo.firstName}</div>
                     }
                 </div>
 
                 <div>
-                    <p><b>Last name:</b></p>
                     {
                         isEdit ?
                             <input
+                                className="input"
                                 type="text"
                                 id="lastName"
-                                value={user.lastName}
+                                value={userInfo.lastName}
                                 disabled={isLoading}
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{user.lastName}</div>
+                            <div>{userInfo.lastName}</div>
                     }
                 </div>
 
                 <div>
-                    <p><b>Email:</b></p>
                     {
                         isEdit ?
                             <input
+                                className="input"
                                 type="email"
                                 id="email"
-                                value={user.email}
+                                value={userInfo.email}
                                 disabled={isLoading}
                                 onChange={changeHandler}
                             />
                             :
-                            <div>{user.email}</div>
+                            <div>{userInfo.email}</div>
                     }
                 </div>
 
                 <div>
-                    <p><b>Created at:</b></p>
+                  <p><b>Created at:</b></p>
                     {/*<div>{auth.createdAt}</div>*/}
                 </div>
-            </div>
+              </div>
+            }
 
             <div>
-                <button onClick={() => setIsEdit(prev => !prev)}>
+                <button className="button" onClick={() => setIsEdit(prev => !prev)}>
                     {
                         isEdit ?
                             'Cancel'
@@ -213,12 +247,31 @@ export const ProfilePage = () => {
                 </button>
                 {
                     isEdit &&
-                  <button onClick={editUserProfile}>Change data</button>
+                  <button className="button" onClick={editUserProfile}>Change data</button>
                 }
             </div>
 
+            <button onClick={() => removeFromLocalStorage()} className="button">
+                Logout
+                <svg className="test" fill="#000000" height="20px" width="20px" version="1.1" id="Capa_1"
+                     xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+                     viewBox="0 0 490.3 490.3" xmlSpace="preserve">
+                    <g>
+                        <g>
+                            <path d="M0,121.05v248.2c0,34.2,27.9,62.1,62.1,62.1h200.6c34.2,0,62.1-27.9,62.1-62.1v-40.2c0-6.8-5.5-12.3-12.3-12.3
+			s-12.3,5.5-12.3,12.3v40.2c0,20.7-16.9,37.6-37.6,37.6H62.1c-20.7,0-37.6-16.9-37.6-37.6v-248.2c0-20.7,16.9-37.6,37.6-37.6h200.6
+			c20.7,0,37.6,16.9,37.6,37.6v40.2c0,6.8,5.5,12.3,12.3,12.3s12.3-5.5,12.3-12.3v-40.2c0-34.2-27.9-62.1-62.1-62.1H62.1
+			C27.9,58.95,0,86.75,0,121.05z"/>
+                            <path d="M385.4,337.65c2.4,2.4,5.5,3.6,8.7,3.6s6.3-1.2,8.7-3.6l83.9-83.9c4.8-4.8,4.8-12.5,0-17.3l-83.9-83.9
+			c-4.8-4.8-12.5-4.8-17.3,0s-4.8,12.5,0,17.3l63,63H218.6c-6.8,0-12.3,5.5-12.3,12.3c0,6.8,5.5,12.3,12.3,12.3h229.8l-63,63
+			C380.6,325.15,380.6,332.95,385.4,337.65z"/>
+                        </g>
+                    </g>
+                </svg>
+            </button>
+
             <div>
-                <button onClick={openPopup}>OPEN POP UP</button>
+                {/*<button onClick={openPopup}>OPEN POP UP</button>*/}
                 {
                     isPopUpOpen &&
                   <div className={`popup ${isPopUpOpen ? 'open' : ''}`} ref={popupRef}>
@@ -238,20 +291,57 @@ export const ProfilePage = () => {
             </div>
 
             <div>
-                {collections && collections.map((collection: any, index: number) => (
+                {collections && collections.map((collection: ICollection, index: number) => (
                     <div key={index} className="collection">
                         <div onClick={() => handleGetImages(collection.title)}>{collection.title}</div>
                         <div>{collection.amountImages > 0 ? collection.amountImages : 0}</div>
-                        <button onClick={() => deleteCollectionHandler(collection.title)}>Delete</button>
+                        {/*<button onClick={() => deleteCollectionHandler(collection.title)}>Delete</button>*/}
                     </div>
                 ))}
             </div>
 
-            <div>
-                {images && images.map((img: any) => (
-                        <img key={img.data.id} src={`data:image/png;base64,${img.imageStr}`} alt="Generated image"/>
-                    )
-                )}
+            <div className="grid-type-selector">
+                <label>
+                    <input
+                        type="radio"
+                        value="grid3"
+                        checked={gridType === 'grid3'}
+                        onChange={handleGridTypeChange}
+                    />
+                    3
+                </label>
+                <label>
+                    <input
+                        type="radio"
+                        value="grid4"
+                        checked={gridType === 'grid4'}
+                        onChange={handleGridTypeChange}
+                    />
+                    4
+                </label>
+            </div>
+
+            <div className={`image-grid ${gridType}`}>
+                {images && collections && images.map((img: IImageData) => (
+                    <div key={img.data.id} className="image-grid-item">
+                        <img src={`data:image/png;base64,${img.imageStr}`} alt="image"/>
+                        <div className="image-overlay">
+                            <p>{img.data.prompt}</p>
+                            {
+                                img.data.published ?
+                                    <div>public</div>
+                                    :
+                                    <div>private</div>
+                            }
+                            <button className="button"
+                                    onClick={() => publicityHandler(img.data, collections[0].bucket)}>Publish
+                            </button>
+                            <button className="like-button">Download</button>
+                            <button className="like-button" onClick={() => deleteImageHandler(img.data.id)}>Delete
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     )

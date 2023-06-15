@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-import {IUserData} from '../../../../models/user'
+import {IUser} from '../../models/user'
 
 // add localstorage
 
@@ -21,7 +21,7 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        addToLocalStorage(state, action: PayloadAction<IUserData>) {
+        addToLocalStorage(state, action: PayloadAction<IUser>) {
             state.user = action.payload
             localStorage.setItem('userData', JSON.stringify(state.user))
         },

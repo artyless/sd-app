@@ -1,11 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
-
-const user = localStorage.getItem('userData')
-let token = ''
-
-if (user) {
-    token = JSON.parse(user).token
-}
+import {IMutationGenerate} from '../../models/query'
+import {IGeneratedResult} from '../../models/generate'
 
 export const generateAPI = createApi({
     reducerPath: 'generateAPI',
@@ -14,12 +9,17 @@ export const generateAPI = createApi({
     }),
     tagTypes: ['Image'],
     endpoints: build => ({
-        generateImage: build.mutation<any, any>({
+        generateImage: build.mutation<IGeneratedResult, IMutationGenerate>({
             query: (args) => ({
                 url: '/txt2img',
                 method: 'POST',
-                body: args,
-                headers: {Authorization: `Bearer ${token}`}
+                body: {
+                    userId: args.userId,
+                    promptText: args.promptText,
+                    imageCount: args.imageCount,
+                    imageSize: args.imageSize
+                },
+                headers: {Authorization: `Bearer ${args.token}`}
             }),
             invalidatesTags: ['Image']
         })

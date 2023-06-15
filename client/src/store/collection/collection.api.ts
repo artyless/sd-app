@@ -1,12 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
-
-const user = localStorage.getItem('userData')
-let token = ''
-
-// TODO local storage не обновляется
-if (user) {
-    token = JSON.parse(user).token
-}
+import {IAuth, IMutationCollection} from '../../models/query'
+import {TypeServerCollections, TypeServerResponse} from '../../types/serverTypes'
 
 export const collectionAPI = createApi({
     reducerPath: 'collectionAPI',
@@ -15,31 +9,28 @@ export const collectionAPI = createApi({
     }),
     tagTypes: ['Collection'],
     endpoints: build => ({
-        // типы
-        createCollection: build.mutation<any, any>({
+        createCollection: build.mutation<TypeServerResponse, IMutationCollection>({
             query: (args) => ({
                 url: '/',
                 method: 'POST',
-                body: args,
-                headers: {Authorization: `Bearer ${token}`}
+                body: {userId: args.userId, collectionName: args.collectionName},
+                headers: {Authorization: `Bearer ${args.token}`}
             }),
             invalidatesTags: ['Collection']
         }),
-        // типы
-        getCollections: build.query<any, any>({
-            query: () => ({
+        getCollections: build.query<TypeServerCollections, IAuth>({
+            query: (args) => ({
                 url: '/',
-                headers: {Authorization: `Bearer ${token}`}
+                headers: {Authorization: `Bearer ${args.token}`}
             }),
             providesTags: result => ['Collection']
         }),
-        // типы
-        deleteCollection: build.mutation<any, any>({
+        deleteCollection: build.mutation<TypeServerResponse, IMutationCollection>({
             query: (args) => ({
                 url: '/',
                 method: 'DELETE',
-                body: args,
-                headers: {Authorization: `Bearer ${token}`}
+                body: {userId: args.userId, collectionName: args.collectionName},
+                headers: {Authorization: `Bearer ${args.token}`}
             }),
             invalidatesTags: ['Collection']
         })
