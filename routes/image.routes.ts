@@ -187,8 +187,6 @@ router.put('/', auth, async (req: Request, res: Response) => {
 
         let searchId: string = ''
 
-        console.log(image)
-
         if (!image.published) {
             const data = await client.index({
                 index: INDEX_NAME,
@@ -201,27 +199,9 @@ router.put('/', auth, async (req: Request, res: Response) => {
             })
             searchId = data._id
         } else {
-            await client.deleteByQuery({
+            await client.delete({
                 index: INDEX_NAME,
-                query: {
-                    bool: {
-                        must: [
-                            {match: {userId: image.userId}},
-                            {match: {prompt: image.prompt}},
-                            {match: {bucket: bucket}},
-                            {match: {storageAddress: image.storageAddress}}
-                        ]
-                    }
-
-                    // удалить по searchId ?
-
-                    //     match: {
-                    //         userId: image.userId,
-                    //         prompt: image.prompt,
-                    //         bucket: bucket,
-                    //         storageAddress: image.storageAddress
-                    //     }
-                }
+                id: image.searchId
             })
         }
 

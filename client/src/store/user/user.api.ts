@@ -1,6 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 import {IAuth} from '../../models/query'
-import {TypeServerUser} from '../../types/serverTypes'
 import {IUser} from '../../models/user'
 
 export const userAPI = createApi({
@@ -10,20 +9,22 @@ export const userAPI = createApi({
     }),
     tagTypes: ['User'],
     endpoints: build => ({
-        editUser: build.mutation<TypeServerUser, IUser>({
+        editUser: build.mutation<IUser, IUser>({
             query: (args) => ({
                 url: '/',
                 method: 'PUT',
                 body: {},
                 headers: {Authorization: `Bearer ${args.token}`}
             }),
+            transformResponse: (response: { user: IUser }) => response.user,
             invalidatesTags: ['User']
         }),
-        getUser: build.query<TypeServerUser, IAuth>({
+        getUser: build.query<IUser, IAuth>({
             query: (args) => ({
                 url: '/',
                 headers: {Authorization: `Bearer ${args.token}`}
             }),
+            transformResponse: (response: { user: IUser }) => response.user,
             providesTags: result => ['User']
         })
     })

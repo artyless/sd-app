@@ -36,7 +36,7 @@ export const GeneratePage = () => {
 
     useEffect(() => {
         if (collectionResponse) {
-            setCollections(collectionResponse.collections)
+            setCollections(collectionResponse)
         }
     }, [collectionResponse])
 

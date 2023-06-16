@@ -2,9 +2,10 @@ import {combineReducers, configureStore} from '@reduxjs/toolkit'
 import {setupListeners} from '@reduxjs/toolkit/query'
 import {authAPI} from './auth/auth.api'
 import {collectionAPI} from './collection/collection.api'
-import {userAPI} from './profile/user.api'
+import {userAPI} from './user/user.api'
 import {imageAPI} from './image/image.api'
 import {generateAPI} from './generate/generate.api'
+import {searchAPI} from './search/search.api'
 import {authReducer} from './auth/auth.slice'
 
 const rootReducer = combineReducers({
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
     [userAPI.reducerPath]: userAPI.reducer,
     [imageAPI.reducerPath]: imageAPI.reducer,
     [generateAPI.reducerPath]: generateAPI.reducer,
+    [searchAPI.reducerPath]: searchAPI.reducer,
     auth: authReducer
 })
 
@@ -23,7 +25,8 @@ export const store = configureStore({
         collectionAPI.middleware,
         userAPI.middleware,
         imageAPI.middleware,
-        generateAPI.middleware
+        generateAPI.middleware,
+        searchAPI.middleware
     )
 })
 

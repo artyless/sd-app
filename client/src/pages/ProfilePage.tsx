@@ -7,7 +7,7 @@ import {
     useGetCollectionsQuery
 } from '../store/collection/collection.api'
 import {useAppSelector} from '../hooks/redux'
-import {useGetUserQuery} from '../store/profile/user.api'
+import {useGetUserQuery} from '../store/user/user.api'
 import {useChangePublicityMutation, useDeleteImageMutation, useGetImagesQuery} from '../store/image/image.api'
 import {IUser} from '../models/user'
 import {IImage, IImageData} from '../models/image'
@@ -38,15 +38,15 @@ export const ProfilePage = () => {
 
     useEffect(() => {
         if (collectionResponse) {
-            setCollections(collectionResponse.collections)
+            setCollections(collectionResponse)
         }
 
         if (userResponse) {
-            setUserInfo(userResponse.user)
+            setUserInfo(userResponse)
         }
 
         if (imagesResponse) {
-            setImages(imagesResponse.images)
+            setImages(imagesResponse)
         }
 
         if (isDeleteSuccess) {
@@ -230,8 +230,8 @@ export const ProfilePage = () => {
                 </div>
 
                 <div>
-                  <p><b>Created at:</b></p>
-                    {/*<div>{auth.createdAt}</div>*/}
+                  <p><b>You with us XX days already</b></p>
+                    {/*<div>{userInfo.createdAt}</div>*/}
                 </div>
               </div>
             }
@@ -271,7 +271,7 @@ export const ProfilePage = () => {
             </button>
 
             <div>
-                {/*<button onClick={openPopup}>OPEN POP UP</button>*/}
+                <button onClick={openPopup}>Create collection</button>
                 {
                     isPopUpOpen &&
                   <div className={`popup ${isPopUpOpen ? 'open' : ''}`} ref={popupRef}>

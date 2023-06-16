@@ -1,6 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 import {IMutationSaveImage, IQueryGetImages, IMutationDeleteImage, IMutationChangePublicity} from '../../models/query'
-import {TypeServerImages, TypeServerResponse} from '../../types/serverTypes'
+import {IImageData} from '../../models/image'
 
 export const imageAPI = createApi({
     reducerPath: 'imageAPI',
@@ -9,7 +9,7 @@ export const imageAPI = createApi({
     }),
     tagTypes: ['Image'],
     endpoints: build => ({
-        saveImage: build.mutation<TypeServerResponse, IMutationSaveImage>({
+        saveImage: build.mutation<string, IMutationSaveImage>({
             query: (args) => ({
                 url: '/',
                 method: 'POST',
@@ -21,31 +21,35 @@ export const imageAPI = createApi({
                 },
                 headers: {Authorization: `Bearer ${args.token}`}
             }),
+            transformResponse: (response: { message: string }) => response.message,
             invalidatesTags: ['Image']
         }),
-        getImages: build.query<TypeServerImages, IQueryGetImages>({
+        getImages: build.query<IImageData[], IQueryGetImages>({
             query: (args) => ({
                 url: `/${args.collectionName}`,
                 headers: {Authorization: `Bearer ${args.token}`}
             }),
+            transformResponse: (response: { images: IImageData[] }) => response.images,
             providesTags: result => ['Image']
         }),
-        deleteImage: build.mutation<TypeServerResponse, IMutationDeleteImage>({
+        deleteImage: build.mutation<string, IMutationDeleteImage>({
             query: (args) => ({
                 url: '/',
                 method: 'DELETE',
                 body: {id: args.id},
                 headers: {Authorization: `Bearer ${args.token}`}
             }),
+            transformResponse: (response: { message: string }) => response.message,
             invalidatesTags: ['Image']
         }),
-        changePublicity: build.mutation<TypeServerResponse, IMutationChangePublicity>({
+        changePublicity: build.mutation<string, IMutationChangePublicity>({
             query: (args) => ({
                 url: '/',
                 method: 'PUT',
                 body: {image: args.image, bucket: args.bucket},
                 headers: {Authorization: `Bearer ${args.token}`}
             }),
+            transformResponse: (response: { message: string }) => response.message,
             invalidatesTags: ['Image']
         })
     })

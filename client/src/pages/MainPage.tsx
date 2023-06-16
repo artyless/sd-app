@@ -2,7 +2,7 @@ import React, {useState, ChangeEvent, FormEvent, useEffect} from 'react'
 import {useAppSelector} from '../hooks/redux'
 import {ScrollToTopButton} from '../components/ScrollToTop'
 import {useGetImagesQuery, useSaveImageMutation} from '../store/image/image.api'
-import {useHttp} from "../hooks/http.hook"
+import {useEditMutation, useSearchQuery} from '../store/search/search.api'
 import {IImageData} from '../models/image'
 import '../styles/css/search.css'
 import '../styles/css/grid-type-selector.css'
@@ -14,15 +14,26 @@ export const MainPage = () => {
     const [images, setImages] = useState<IImageData[]>([])
     const [searchQuery, setSearchQuery] = useState<string>('')
     const [gridType, setGridType] = useState<'grid3' | 'grid4'>('grid3')
+    const [startSearch, setStartSearch] = useState<boolean>(false)
     const [saveImage] = useSaveImageMutation()
+    const [editSearch] = useEditMutation()
     // TODO выполнять только при первой загрузке страницы
     const {data: imagesResponse} = useGetImagesQuery({collectionName: '', token: user.token})
+    const {data: searchResponse} = useSearchQuery({
+        query: searchQuery,
+        token: user.token
+    }, {skip: !startSearch})
 
     useEffect(() => {
         if (imagesResponse) {
-            setImages(imagesResponse.images)
+            setImages(imagesResponse)
         }
-    }, [imagesResponse])
+
+        if (searchResponse) {
+            setStartSearch(false)
+            setImages(searchResponse.images)
+        }
+    }, [imagesResponse, searchResponse])
 
     const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value)
@@ -40,19 +51,16 @@ export const MainPage = () => {
         // Обработка нажатия на кнопку лайка
     }
 
-    const {request} = useHttp()
-
     const search = async () => {
         try {
-            const response = await request(`/api/search/${searchQuery}`, 'GET')
-            setImages(response.images)
+            setStartSearch(true)
         } catch {
         }
     }
 
-    const addSearch = async () => {
+    const editSearchHandler = async () => {
         try {
-            const response = await request('/api/search/edit', 'POST', {userId: user.id, imageStr: searchQuery})
+            const response = await editSearch({token: user.token})
         } catch {
         }
     }
@@ -82,7 +90,7 @@ export const MainPage = () => {
                     placeholder="Enter query"
                 />
                 <button className="button height" type="submit" onClick={search}>Search</button>
-                {/*<button className="button" type="submit" onClick={addSearch}>Добавить</button>*/}
+                <button className="button" type="submit" onClick={editSearchHandler}>Edit</button>
             </form>
 
             <ScrollToTopButton/>

@@ -7,7 +7,6 @@ export const generateAPI = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: '/api/sd'
     }),
-    tagTypes: ['Image'],
     endpoints: build => ({
         generateImage: build.mutation<IGeneratedResult, IMutationGenerate>({
             query: (args) => ({
@@ -20,8 +19,7 @@ export const generateAPI = createApi({
                     imageSize: args.imageSize
                 },
                 headers: {Authorization: `Bearer ${args.token}`}
-            }),
-            invalidatesTags: ['Image']
+            })
         })
     })
 })
