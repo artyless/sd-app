@@ -3,7 +3,7 @@ import {useAppSelector} from '../hooks/redux'
 import {useGetCollectionsQuery} from '../store/collection/collection.api'
 import {useGenerateImageMutation} from '../store/generate/generate.api'
 import {useSaveImageMutation} from '../store/image/image.api'
-import {SaveButton} from '../components/SaveButton'
+import {SaveButton} from '../Components/SaveButton'
 import '../styles/css/index.css'
 import '../styles/css/generate-page.css'
 import '../styles/css/image-grid.css'
@@ -23,7 +23,7 @@ export const GeneratePage = () => {
     const {user, isLoading} = useAppSelector(state => state.auth)
     const [generateImage, {isLoading: isLoadingImage}] = useGenerateImageMutation()
     const [saveImage] = useSaveImageMutation()
-    const {data: collectionResponse} = useGetCollectionsQuery({token: user.token})
+    const {data: collectionResponse} = useGetCollectionsQuery({token: user!.token})
 
     const [collections, setCollections] = useState<ICollection[]>()
     const [collectionName, setCollectionName] = useState<ICollection['title']>('')
@@ -32,7 +32,7 @@ export const GeneratePage = () => {
     const [imageSize, setImageSize] = useState<ImageSize>(ImageSize.SMALL)
     const [images, setImages] = useState<IImageData['imageStr'][]>()
     const [parameters, setParameters] = useState<IGenerateParams>()
-    const [gridType, setGridType] = useState<'grid1' | 'grid2' | 'grid4'>('grid1')
+    const [gridType, setGridType] = useState<'grid1' | 'grid2' | 'grid4'>('grid2')
 
     useEffect(() => {
         if (collectionResponse) {
@@ -65,11 +65,11 @@ export const GeneratePage = () => {
     const handleGenerateImage = async () => {
         try {
             const response = await generateImage({
-                userId: user.id,
+                userId: user!.id,
                 promptText: promptText,
                 imageCount: imageCount,
                 imageSize: imageSize,
-                token: user.token
+                token: user!.token
             })
 
             if ('data' in response) {
@@ -91,11 +91,11 @@ export const GeneratePage = () => {
     const saveImageHandler = async (imageStr: string, prompt: string, collectionName: string) => {
         try {
             const response = await saveImage({
-                userId: user.id,
+                userId: user!.id,
                 imageStr: imageStr,
                 prompt: prompt,
                 collectionName: collectionName,
-                token: user.token
+                token: user!.token
             })
         } catch (e) {
         }

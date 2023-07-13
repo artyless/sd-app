@@ -16,7 +16,7 @@ router.post('/txt2img', auth, async (req: Request, res: Response) => {
         const sendingData = {
             prompt: promptText,
             steps: 20,
-            n_iter: imageCount,
+            n_iter: 2,
             width: imageSize,
             height: imageSize
         }

@@ -1,6 +1,6 @@
 import React, {useState, ChangeEvent, FormEvent, useEffect} from 'react'
 import {useAppSelector} from '../hooks/redux'
-import {ScrollToTopButton} from '../components/ScrollToTop'
+import {ScrollToTopButton} from '../Components/ScrollToTop'
 import {useGetImagesQuery, useSaveImageMutation} from '../store/image/image.api'
 import {useEditMutation, useSearchQuery} from '../store/search/search.api'
 import {IImageData} from '../models/image'
@@ -15,17 +15,21 @@ export const MainPage = () => {
     const [searchQuery, setSearchQuery] = useState<string>('')
     const [gridType, setGridType] = useState<'grid3' | 'grid4'>('grid3')
     const [startSearch, setStartSearch] = useState<boolean>(false)
+    const [imagesFetched, setImagesFetched] = useState<boolean>(false)
     const [saveImage] = useSaveImageMutation()
     const [editSearch] = useEditMutation()
-    // TODO выполнять только при первой загрузке страницы
-    const {data: imagesResponse} = useGetImagesQuery({collectionName: '', token: user.token})
+    const {data: imagesResponse} = useGetImagesQuery({
+        collectionName: '',
+        token: user!.token
+    }, {skip: imagesFetched})
     const {data: searchResponse} = useSearchQuery({
         query: searchQuery,
-        token: user.token
+        token: user!.token
     }, {skip: !startSearch})
 
     useEffect(() => {
         if (imagesResponse) {
+            setImagesFetched(true)
             setImages(imagesResponse)
         }
 
@@ -60,7 +64,7 @@ export const MainPage = () => {
 
     const editSearchHandler = async () => {
         try {
-            const response = await editSearch({token: user.token})
+            const response = await editSearch({token: user!.token})
         } catch {
         }
     }
@@ -68,11 +72,11 @@ export const MainPage = () => {
     const saveImageHandler = async (imageStr: string, prompt: string, collectionName: string) => {
         try {
             const response = await saveImage({
-                userId: user.id,
+                userId: user!.id,
                 imageStr: imageStr,
                 prompt: prompt,
                 collectionName: collectionName,
-                token: user.token
+                token: user!.token
             })
         } catch (e) {
         }

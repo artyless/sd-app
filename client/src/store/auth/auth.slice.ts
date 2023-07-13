@@ -4,15 +4,20 @@ import {IUser} from '../../models/user'
 // add localstorage
 
 interface AuthState {
-
+    user: IUser | null
+    isLoading: boolean
+    error: string
 }
 
+// const storedUserData = localStorage.getItem('userData')
 // const initialState: AuthState = {
-//
+//     user: storedUserData ? JSON.parse(storedUserData) : '',
+//     isLoading: false,
+//     error: ''
 // }
 
-const initialState = {
-    user: JSON.parse(localStorage.getItem('userData') ?? ''),
+const initialState: AuthState = {
+    user: JSON.parse(localStorage.getItem('userData') ?? 'null'),
     isLoading: false,
     error: ''
 }
@@ -26,7 +31,7 @@ export const authSlice = createSlice({
             localStorage.setItem('userData', JSON.stringify(state.user))
         },
         removeFromLocalStorage(state) {
-            state.user = ''
+            state.user = null
             localStorage.setItem('userData', JSON.stringify(state.user))
         }
     }

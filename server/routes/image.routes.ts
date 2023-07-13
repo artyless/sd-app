@@ -1,10 +1,11 @@
 import {Router, Request, Response} from 'express'
 import {auth} from '../middleware/auth.middleware.js'
-import {Collection, Image, PrismaClient} from '@prisma/client'
+import {Collection, PrismaClient} from '@prisma/client'
 import {generateUniqueFileName} from '../utils/generateUniqueFileName.js'
 import {minioClient} from '../minio/minioConfig.js'
 import {client, INDEX_NAME} from '../elasticSearch/elasticSearchConfig.js'
 import {IImageCollection} from '../models/image.js'
+import {translate} from "../deepL/deepLConfig.js"
 
 const router: Router = Router()
 const prisma = new PrismaClient()
@@ -12,45 +13,63 @@ const prisma = new PrismaClient()
 // /api/image/
 router.post('/', auth, async (req: Request, res: Response) => {
     try {
-        const {userId, imageStr, prompt, collectionName} = req.body
+        // const {userId, imageStr, prompt, collectionName} = req.body
+        //
+        // if (!imageStr) {
+        //     res.status(500).json({message: 'Something went wrong, try again'})
+        // }
 
-        if (!imageStr) {
-            res.status(500).json({message: 'Something went wrong, try again'})
-        }
+        const text = 'Hello World!'
+        // const target = detect_language(text)
 
-        const storageAddress: string = userId.toString() + generateUniqueFileName(prompt)
 
-        const imageBuffer: Buffer = Buffer.from(imageStr, 'base64')
 
-        const collection: Collection | null = await prisma.collection.findFirst({
-            where: {
-                userId: userId,
-                title: collectionName
-            }
-        })
+        const response = await translate('Hello, world!', 'RU')
 
-        if (!collection) {
-            return res.status(500).json({message: 'Collection not found!'})
-        }
 
-        minioClient.putObject(collection.bucket, storageAddress, imageBuffer, (err, etag) => {
-            if (err) {
-                console.error(err.message)
-                return res.status(500).json({message: 'Something went wrong, try again'})
-            }
-        })
+        // определяем какой язык
+        // если русский, переводим на английский
+        // если английский, переводим на русский
 
-        // TODO
-        await prisma.image.create({
-            data: {
-                prompt: prompt,
-                translated: generateUniqueFileName('temporary'),
-                language: 'eng',
-                storageAddress: storageAddress,
-                userId: userId,
-                collectionId: collection.id
-            }
-        })
+        // меняем их местами чтобы prompt был англ, promptRu был рус
+
+        const promptRu = ''
+
+        // остальные операции делаем с английским вариантом
+
+
+
+        // const storageAddress: string = userId.toString() + generateUniqueFileName(prompt)
+        //
+        // const imageBuffer: Buffer = Buffer.from(imageStr, 'base64')
+        //
+        // const collection: Collection | null = await prisma.collection.findFirst({
+        //     where: {
+        //         userId: userId,
+        //         title: collectionName
+        //     }
+        // })
+        //
+        // if (!collection) {
+        //     return res.status(500).json({message: 'Collection not found!'})
+        // }
+        //
+        // minioClient.putObject(collection.bucket, storageAddress, imageBuffer, (err, etag) => {
+        //     if (err) {
+        //         console.error(err.message)
+        //         return res.status(500).json({message: 'Something went wrong, try again'})
+        //     }
+        // })
+
+        // await prisma.image.create({
+        //     data: {
+        //         prompt: prompt,
+        //         promptRu: promptRu,
+        //         storageAddress: storageAddress,
+        //         userId: userId,
+        //         collectionId: collection.id
+        //     }
+        // })
 
         res.status(200).json({message: 'Image has been saved'})
     } catch (err) {

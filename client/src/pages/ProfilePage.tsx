@@ -27,9 +27,9 @@ export const ProfilePage = () => {
     const popupRef = useRef(null)
     const [gridType, setGridType] = useState<'grid3' | 'grid4'>('grid3')
 
-    const {data: imagesResponse} = useGetImagesQuery({collectionName: 'Saved', token: user.token})
-    const {data: userResponse} = useGetUserQuery({token: user.token})
-    const {data: collectionResponse, refetch: refetchCollections} = useGetCollectionsQuery({token: user.token})
+    const {data: imagesResponse} = useGetImagesQuery({collectionName: 'Saved', token: user!.token})
+    const {data: userResponse} = useGetUserQuery({token: user!.token})
+    const {data: collectionResponse, refetch: refetchCollections} = useGetCollectionsQuery({token: user!.token})
     const [createCollection] = useCreateCollectionMutation()
     const [deleteCollection, {isLoading, error}] = useDeleteCollectionMutation()
     const [deleteImage, {isSuccess: isDeleteSuccess}] = useDeleteImageMutation()
@@ -55,12 +55,12 @@ export const ProfilePage = () => {
     }, [collectionResponse, userResponse, imagesResponse, isDeleteSuccess])
 
     const [userData, setUserData] = useState<IUser>({
-        id: user.id,
-        userName: `${user.userName}`,
-        firstName: `${user.firstName}`,
-        lastName: `${user.lastName}`,
-        email: `${user.email}`,
-        createdAt: user.createdAt
+        id: user!.id,
+        userName: `${user!.userName}`,
+        firstName: `${user!.firstName}`,
+        lastName: `${user!.lastName}`,
+        email: `${user!.email}`,
+        createdAt: user!.createdAt
     })
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -74,9 +74,9 @@ export const ProfilePage = () => {
     const createCollectionHandler = async () => {
         try {
             const response = await createCollection({
-                userId: user.id,
+                userId: user!.id,
                 collectionName: collectionName,
-                token: user.token
+                token: user!.token
             })
         } catch (err) {
             console.error('ERROR: ', err)
@@ -135,9 +135,9 @@ export const ProfilePage = () => {
     const deleteCollectionHandler = async (collection: string) => {
         try {
             const response = await deleteCollection({
-                userId: user.id,
+                userId: user!.id,
                 collectionName: collection,
-                token: user.token
+                token: user!.token
             })
         } catch (err) {
             console.error('ERROR: ', err)
@@ -146,7 +146,7 @@ export const ProfilePage = () => {
 
     const deleteImageHandler = async (id: number) => {
         try {
-            const response = await deleteImage({id: id, token: user.token})
+            const response = await deleteImage({id: id, token: user!.token})
         } catch (err) {
             console.error('ERROR: ', err)
         }
@@ -154,7 +154,7 @@ export const ProfilePage = () => {
 
     const publicityHandler = async (image: IImage, bucket: string) => {
         try {
-            const response = await changePublicity({image, bucket, token: user.token})
+            const response = await changePublicity({image, bucket, token: user!.token})
         } catch (err) {
             console.error('ERROR: ', err)
         }

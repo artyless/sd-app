@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {useMessage} from '../hooks/message.hook'
-import {IUser} from '../../../models/user'
+import {IUser} from '../models/user'
 import {Link} from 'react-router-dom'
 import {useRegisterMutation} from '../store/auth/auth.api'
 import {TypeServerError} from '../types/serverTypes'

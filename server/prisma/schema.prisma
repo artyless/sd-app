@@ -10,10 +10,9 @@ datasource db {
 model Image {
   id             Int        @id @default(autoincrement())
   prompt         String     @db.VarChar(255)
-  translated     String     @db.VarChar(255)
-  language       String     @db.VarChar(8)
+  promptRu       String     @db.VarChar(255)
   storageAddress String     @unique @db.VarChar(255)
-  searchId       String?    @unique @default("") @db.VarChar(255)
+  searchId       String?    @default("") @db.VarChar(255)
   published      Boolean    @default(false)
   likeCount      Int        @default(0)
   createdAt      DateTime   @default(now()) @db.Timestamp(6)

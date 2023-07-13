@@ -4,6 +4,8 @@ import {client, INDEX_NAME, indexSettings} from '../elasticSearch/elasticSearchC
 import {PrismaClient} from '@prisma/client'
 import {minioClient} from '../minio/minioConfig.js'
 import {IImageSearch} from '../models/image.js'
+import {translate} from "../deepL/deepLConfig.js"
+import cld from 'cld'
 
 const router: Router = Router()
 const prisma = new PrismaClient()
@@ -14,6 +16,13 @@ router.post('/edit', auth, async (req: Request, res: Response) => {
         // await client.indices.create(indexSettings)
 
         // await client.indices.delete({index: INDEX_NAME})
+
+        const text = 'cat'
+        // const target = detect_language(text)
+
+        // cld.detect(text).then(result => console.log(result)).catch(error => console.error(error))
+
+        const response = await translate(text, 'RU')
 
         res.status(200).json({message: 'OKAY'})
     } catch (err) {
@@ -26,6 +35,9 @@ router.post('/edit', auth, async (req: Request, res: Response) => {
 router.get('/:query', auth, async (req: Request, res: Response) => {
     try {
         const query = req.params.query
+
+        // проверяем язык
+        // если английский ничего не делаем
 
         const result = await client.search({
             index: INDEX_NAME,

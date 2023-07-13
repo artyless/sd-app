@@ -20,9 +20,12 @@
   "author": "Artyom Potykanenko <artyless@icloud.com>",
   "license": "ISC",
   "dependencies": {
+    "@elastic/elasticsearch": "^8.8.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/jsonwebtoken": "^9.0.1",
     "bcryptjs": "^2.4.3",
+    "cld": "^2.9.0",
+    "deepl-node": "^1.10.2",
     "express": "^4.18.2",
     "express-validator": "^6.15.0",
     "jsonwebtoken": "^9.0.0",

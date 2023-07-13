@@ -1,10 +1,10 @@
+import React from 'react'
 import {Routes, Route, Navigate} from 'react-router-dom'
 import {AuthPage} from './pages/AuthPage'
 import {MainPage} from './pages/MainPage'
 import {ProfilePage} from './pages/ProfilePage'
 import {RegistrationPage} from './pages/RegistrationPage'
 import {GeneratePage} from './pages/GeneratePage'
-import {HowToUse} from './pages/HowToUse'
 
 export const useRoutes = (isAuthenticated: boolean) => {
     return isAuthenticated ?
@@ -12,7 +12,6 @@ export const useRoutes = (isAuthenticated: boolean) => {
             <Route path="/main" element={<MainPage/>}/>
             <Route path="/profile" element={<ProfilePage/>}/>
             <Route path="/generate" element={<GeneratePage/>}/>
-            <Route path="/help" element={<HowToUse/>}/>
             <Route path="*" element={<Navigate to="/main"/>}/>
         </Routes>
         :

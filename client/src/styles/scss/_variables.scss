@@ -1,0 +1,48 @@
+// Colors
+$black: #000;
+$gray: #808080;
+$white: #FFF;
+$orange: #ff9800;
+
+$color1: #03a9f4;
+$color2: #ff5722;
+$color3: #cddc39;
+$error: #e91e63;
+$color5: #9c27b0;
+
+$primary-color: $gray;
+$lighter-primary: lighten($primary-color, 10%);
+$darker-primary: darken($primary-color, 10%);
+$secondary-color: $orange;
+
+// Fonts
+$serif: "Lora";
+$sans-serif: "Roboto";
+
+$primary-font: $sans-serif;
+$secondary-font: $serif;
+
+// Distance
+$mobile-space: 10px;
+$desktop-space: 35px;
+
+
+
+
+@mixin overlay() {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+
+.box{
+  @include border-radius(3px);
+}

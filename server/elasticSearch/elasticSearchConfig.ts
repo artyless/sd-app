@@ -10,7 +10,7 @@ export const indexSettings: IndicesCreateRequest = {
     settings: {
         analysis: {
             analyzer: {
-                custom_analyzer: {
+                english_analyzer: {
                     type: "custom",
                     tokenizer: "standard",
                     filter: [
@@ -18,6 +18,16 @@ export const indexSettings: IndicesCreateRequest = {
                         "english_stop",
                         "english_keywords",
                         "english_stemmer"
+                    ]
+                },
+                russian_analyzer: {
+                    type: "custom",
+                    tokenizer: "standard",
+                    filter: [
+                        "lowercase",
+                        "russian_stop",
+                        "russian_keywords",
+                        "russian_stemmer"
                     ]
                 }
             },
@@ -33,6 +43,18 @@ export const indexSettings: IndicesCreateRequest = {
                 english_stemmer: {
                     type: "stemmer",
                     language: "english"
+                },
+                russian_stop: {
+                    type: "stop",
+                    stopwords: "_russian_"
+                },
+                russian_keywords: {
+                    type: "keyword_marker",
+                    keywords: ["пример"]
+                },
+                russian_stemmer: {
+                    type: "stemmer",
+                    language: "russian"
                 }
             }
         }
@@ -41,7 +63,11 @@ export const indexSettings: IndicesCreateRequest = {
         properties: {
             prompt: {
                 type: "text",
-                analyzer: "custom_analyzer"
+                analyzer: "english_analyzer"
+            },
+            promptRu: {
+                type: "text",
+                analyzer: "russian_analyzer"
             }
         }
     }

@@ -3,7 +3,7 @@ import {ICollection} from './collection.js'
 export interface IImage {
     id: number
     prompt: string
-    translated: string
+    promptRu: string
     storageAddress: string
     searchId: string | null
     published: boolean
@@ -25,6 +25,7 @@ export interface IImageCollection extends IImage {
 export interface IImageSearch {
     userId: number
     prompt: string
+    promptRu: string
     bucket: string
     storageAddress: string
 }

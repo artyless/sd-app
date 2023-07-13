@@ -1,0 +1,48 @@
+@import 'variables';
+
+.button {
+  display: block;
+  box-sizing: border-box;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-radius: 8px;
+  background-color: $primary-color;
+  color: $white;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+
+  &:hover {
+    background-color: $darker-primary;
+  }
+
+  &:active {
+    background-color: $lighter-primary;
+  }
+
+  &:disabled {
+    opacity: .5;
+    cursor: default;
+  }
+
+  &.medium {
+    width: 25%;
+    padding: 12px 28px;
+    font-size: 16px;
+  }
+
+  &.large {
+    width: 100%;
+    padding: 12px 28px;
+    font-size: 16px;
+  }
+
+  &.height {
+    height: 100%;
+  }
+}

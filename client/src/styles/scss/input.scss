@@ -1,0 +1,41 @@
+@import 'variables';
+
+.input {
+  display: block;
+  box-sizing: border-box;
+  padding: 12px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: $white;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $secondary-color;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, .3);
+  }
+
+  &:disabled {
+    opacity: .5;
+  }
+
+  &.error {
+    border-color: $error;
+  }
+
+  &.medium {
+    width: 50%;
+  }
+
+  &.large {
+    width: 100%;
+  }
+}
+
+.error-message {
+  color: $error;
+  font-size: 14px;
+  margin-top: -10px;
+}

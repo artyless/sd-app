@@ -1,6 +1,6 @@
 .DS_STORE
 build/
-node_modules
+server/node_modules
 client/node_modules
 .idea
 # Keep environment variables out of version control
